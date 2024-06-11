@@ -26,7 +26,6 @@ namespace SLZ.Marrow.Interaction
 		private MarrowEntity _entity;
 
 		[SerializeField]
-		[ReadOnly(false)]
 		private ConfigurableJointInfo _defaultConfigJointInfo;
 
 		private SimpleTransform _jointSpace;

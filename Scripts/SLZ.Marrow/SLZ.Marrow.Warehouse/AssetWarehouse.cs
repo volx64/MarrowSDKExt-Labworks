@@ -56,8 +56,7 @@ namespace SLZ.Marrow.Warehouse
                 return _inventoryRegistry;
             }
         }
-
-        [ReadOnly]
+        
         [SerializeField]
         private List<string> _allTags = new List<string>();
         public List<string> AllTags
@@ -74,7 +73,6 @@ namespace SLZ.Marrow.Warehouse
         }
 
         [SerializeField]
-        [ReadOnly]
         private bool _initialLoaded = false;
         public bool InitialLoaded
         {
