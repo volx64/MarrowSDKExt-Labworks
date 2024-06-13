@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -74,26 +74,31 @@ namespace SLZ.Marrow.Zones
 		}
 
 		// Token: 0x040001AB RID: 427
+  		// Made public for Editor Scripts
 		[SerializeField]
-		private float initialDelay;
+		public float initialDelay;
 
 		// Token: 0x040001AC RID: 428
+  		// Made public for Editor Scripts
 		[SerializeField]
-		private float spawnInterval;
+		public float spawnInterval;
 
 		// Token: 0x040001AD RID: 429
+  		// Made public for Editor Scripts
 		[Tooltip("Max amount that can be spawned")]
 		[SerializeField]
-		private float maxConcurrent;
+		public float maxConcurrent;
 
 		// Token: 0x040001AE RID: 430
+  		// Made public for Editor Scripts
 		[Tooltip("Randomize which spawner is used")]
 		[SerializeField]
-		private bool randomizeSpawner;
+		public bool randomizeSpawner;
 
 		// Token: 0x040001AF RID: 431
+  		// Made public for Editor Scripts
 		[SerializeField]
-		private CrateSpawner[] crateSpawners;
+		public CrateSpawner[] crateSpawners;
 
 		// Token: 0x040001B0 RID: 432
 		private int _spawnerIndex;
