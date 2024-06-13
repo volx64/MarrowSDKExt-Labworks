@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SLZ.Marrow.Warehouse;
 using UnityEngine;
 
@@ -6,11 +6,13 @@ namespace SLZ.Marrow.Zones
 {
 	// Token: 0x02000038 RID: 56
 	[RequireComponent(typeof(CrateSpawner))]
+	[ExecuteAlways]
 	public class SpawnDecorator : MonoBehaviour, ISpawnListenable
 	{
 		// Token: 0x06000259 RID: 601 RVA: 0x00002D7E File Offset: 0x00000F7E
 		protected virtual void OnEnable()
 		{
+			_crateSpawner = GetComponent<CrateSpawner>();
 		}
 
 		// Token: 0x0600025A RID: 602 RVA: 0x00002D80 File Offset: 0x00000F80
