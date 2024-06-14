@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4036e0b5b59e2048bc6300b5d5295fe, type: 3}
+  m_Script: {fileID: 11500000, guid: c4e7698d9d4ca9a4681096da90643758, type: 3}
   m_Name: Being.bt
   m_EditorClassIdentifier: 
   _barcode:
