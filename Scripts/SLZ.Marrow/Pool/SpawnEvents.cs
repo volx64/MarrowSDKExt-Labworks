@@ -7,8 +7,9 @@ namespace SLZ.Marrow.Pool
 {
 	public abstract class SpawnEvents : MonoBehaviour, IPoolable
 	{
+ 		// Switched to public for labworks to automate
 		[SerializeField]
-		protected Poolee _poolee;
+		public Poolee _poolee;
 
 		public ulong ID => 0uL;
 
