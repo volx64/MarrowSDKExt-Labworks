@@ -45,5 +45,10 @@ namespace SLZ.Marrow.Zones
         public DataCardReference<MonoDisc> introTrack;
         [HideInInspector]
         public static bool zoneMusicPasted = false;
+
+        public void Play()
+        {
+            
+        }
     }
 }
