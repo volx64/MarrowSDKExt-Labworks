@@ -50,5 +50,10 @@ namespace SLZ.Marrow.Zones
         {
             
         }
+
+        public void StopMusic(float fadeTime)
+        {
+            
+        }
     }
 }
