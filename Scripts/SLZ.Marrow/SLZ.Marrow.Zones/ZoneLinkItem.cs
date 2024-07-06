@@ -14,9 +14,9 @@ namespace SLZ.Marrow.Zones
         }
 
         [SerializeField]
-        protected ZoneLink _zoneLink;
+        public ZoneLink _zoneLink;
         [EnumFlags, SerializeField]
-        protected EventTypes _eventTypes = EventTypes.Primary | EventTypes.Secondary;
+        public EventTypes _eventTypes = EventTypes.Primary | EventTypes.Secondary;
 #if UNITY_EDITOR
         protected virtual void Reset()
         {
