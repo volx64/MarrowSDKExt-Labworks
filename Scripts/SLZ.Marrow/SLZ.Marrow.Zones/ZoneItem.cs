@@ -23,5 +23,28 @@ namespace SLZ.Marrow.Zones
             _zone = transform.parent.GetComponent<Zone>();
         }
 #endif
+        protected virtual void OnEnable()
+        {
+        }
+
+        protected virtual void OnDisable()
+        {
+        }
+
+        protected virtual void OnEnter(MarrowEntity entity)
+        {
+        }
+
+        protected virtual void OnExit(MarrowEntity entity)
+        {
+        }
+
+        public void OnZoneEntityEnter(MarrowEntity entity)
+        {
+        }
+
+        public void OnZoneEntityExit(MarrowEntity entity)
+        {
+        }
     }
 }
