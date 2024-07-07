@@ -12,5 +12,10 @@ namespace SLZ.Marrow.Zones
     {
         public LevelCrateReference level;
         public LevelCrateReference loadScreenLevel;
+        public UnityAction OnLevelSwitch;
+
+        protected override void OnEnter(MarrowEntity activatorEntity)
+        {
+        }
     }
 }
