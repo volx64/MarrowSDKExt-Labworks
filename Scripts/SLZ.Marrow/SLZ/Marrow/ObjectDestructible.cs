@@ -82,7 +82,7 @@ namespace SLZ.Marrow
 		public float feetDamageMult;
 
 		[SerializeField]
-		private ImpactSFX _impactSfx;
+		public ImpactSFX _impactSfx;
 
 		private bool _isDead;
 
