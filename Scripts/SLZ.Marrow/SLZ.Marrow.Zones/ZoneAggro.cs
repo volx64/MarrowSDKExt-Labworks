@@ -13,9 +13,9 @@ namespace SLZ.Marrow.Zones
     public class ZoneAggro : MonoBehaviour, IZoneEntityListenable
     {
         [SerializeField]
-        private Zone _zone;
+        public Zone _zone;
         [SerializeField]
-        private ZoneLink _zoneLink;
+        public ZoneLink _zoneLink;
         public MarrowQuery beingTags = new();
         public MarrowQuery playerTag = new();
         void Reset()
