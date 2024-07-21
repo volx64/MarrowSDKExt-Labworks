@@ -48,6 +48,7 @@ namespace SLZ.MarrowEditor
         public static bool startWarehouseLoadModsFolder = true;
         public static bool verboseWarehouseLogging = false;
         public static bool unlockEditingScannables = false;
+        public static bool packWithDedupe = false;
         public static bool gizmoShowZoneGizmos = true;
         public static bool gizmoShowZonePickableCube = true;
         public static bool gizmoShowZoneLinks = true;
@@ -95,6 +96,7 @@ namespace SLZ.MarrowEditor
         public static bool docsChecklistAvatarPackPalletPref = false;
         public static bool docsChecklistAvatarInstallModPref = false;
         public static bool docsChecklistLevelLayoutEnvironmentPref = false;
+        public static bool docsChecklistLevelImpactPropertiesPref = false;
         public static bool docsChecklistLevelLightsPref = false;
         public static bool docsChecklistLevelLightProbesPref = false;
         public static bool docsChecklistLevelReflectionProbesPref = false;
@@ -150,6 +152,7 @@ namespace SLZ.MarrowEditor
             startWarehouseLoadModsFolder = EditorPrefs.GetBool("StartWarehouseLoadModsFolder", true);
             verboseWarehouseLogging = EditorPrefs.GetBool("VerboseWarehouseLogging", false);
             unlockEditingScannables = EditorPrefs.GetBool("UnlockEditingScannables", false);
+            packWithDedupe = EditorPrefs.GetBool("PackWithDedupe", false);
             gizmoShowZoneGizmos = EditorPrefs.GetBool("gizmoShowZoneGizmos", true);
             gizmoShowZonePickableCube = EditorPrefs.GetBool("gizmoShowZonePickableCube", true);
             gizmoShowZoneLinks = EditorPrefs.GetBool("gizmoShowZoneLinks", true);
@@ -195,6 +198,7 @@ namespace SLZ.MarrowEditor
             docsChecklistAvatarPackPalletPref = EditorPrefs.GetBool("docsChecklistAvatarPackPalletPref", false);
             docsChecklistAvatarInstallModPref = EditorPrefs.GetBool("docsChecklistAvatarInstallModPref", false);
             docsChecklistLevelLayoutEnvironmentPref = EditorPrefs.GetBool("docsChecklistLevelLayoutEnvironmentPref", false);
+            docsChecklistLevelImpactPropertiesPref = EditorPrefs.GetBool("docsChecklistLevelImpactPropertiesPref", false);
             docsChecklistLevelLightsPref = EditorPrefs.GetBool("docsChecklistLevelLightsPref", false);
             docsChecklistLevelLightProbesPref = EditorPrefs.GetBool("docsChecklistLevelLightProbesPref", false);
             docsChecklistLevelReflectionProbesPref = EditorPrefs.GetBool("docsChecklistLevelReflectionProbesPref", false);
@@ -324,6 +328,11 @@ namespace SLZ.MarrowEditor
             SaveGameInstallData();
             verboseWarehouseLogging = EditorGUILayout.Toggle("Verbose AssetWarehouse Logging", verboseWarehouseLogging);
             unlockEditingScannables = EditorGUILayout.Toggle("Developer Mode", unlockEditingScannables);
+            if (unlockEditingScannables)
+            {
+                packWithDedupe = EditorGUILayout.Toggle("Pack With Dedupe", packWithDedupe);
+            }
+
             EditorGUILayout.Space(10);
             EditorGUILayout.LabelField("Zones", EditorStyles.boldLabel);
             gizmoShowZoneGizmos = EditorGUILayout.Toggle("Show Zone Gizmos", gizmoShowZoneGizmos);
@@ -362,6 +371,7 @@ namespace SLZ.MarrowEditor
                 EditorPrefs.SetBool("StartWarehouseLoadModsFolder", startWarehouseLoadModsFolder);
                 EditorPrefs.SetBool("VerboseWarehouseLogging", verboseWarehouseLogging);
                 EditorPrefs.SetBool("UnlockEditingScannables", unlockEditingScannables);
+                EditorPrefs.SetBool("PackWithDedupe", packWithDedupe);
                 EditorPrefs.SetBool("gizmoShowZoneGizmos", gizmoShowZoneGizmos);
                 EditorPrefs.SetBool("gizmoShowZonePickableCube", gizmoShowZonePickableCube);
                 EditorPrefs.SetBool("gizmoShowZoneLinks", gizmoShowZoneLinks);
@@ -407,6 +417,7 @@ namespace SLZ.MarrowEditor
                 EditorPrefs.SetBool("docsChecklistAvatarPackPalletPref", docsChecklistAvatarPackPalletPref);
                 EditorPrefs.SetBool("docsChecklistAvatarInstallModPref", docsChecklistAvatarInstallModPref);
                 EditorPrefs.SetBool("docsChecklistLevelLayoutEnvironmentPref", docsChecklistLevelLayoutEnvironmentPref);
+                EditorPrefs.SetBool("docsChecklistLevelImpactPropertiesPref", docsChecklistLevelImpactPropertiesPref);
                 EditorPrefs.SetBool("docsChecklistLevelLightsPref", docsChecklistLevelLightsPref);
                 EditorPrefs.SetBool("docsChecklistLevelLightProbesPref", docsChecklistLevelLightProbesPref);
                 EditorPrefs.SetBool("docsChecklistLevelReflectionProbesPref", docsChecklistLevelReflectionProbesPref);

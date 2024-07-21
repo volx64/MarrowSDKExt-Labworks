@@ -21,8 +21,8 @@ namespace SLZ.Marrow.Warehouse
             otherManifest.CopyTo(this);
         }
 
-        private string _palletBarcode;
-        public string PalletBarcode { get => _palletBarcode; set => _palletBarcode = value; }
+        private Barcode _palletBarcode;
+        public Barcode PalletBarcode { get => _palletBarcode; set => _palletBarcode = value; }
 
         private string _palletPath;
         public string PalletPath { get => _palletPath; set => _palletPath = value; }
@@ -122,7 +122,7 @@ namespace SLZ.Marrow.Warehouse
 
         public void Pack(ObjectStore store, JObject json)
         {
-            json.Add("palletBarcode", _palletBarcode);
+            json.Add("palletBarcode", _palletBarcode.ID);
             json.Add("palletPath", _palletPath);
             json.Add("catalogPath", _catalogPath);
             json.Add("version", _version);
@@ -137,7 +137,7 @@ namespace SLZ.Marrow.Warehouse
         {
             if (store.TryGetJSON("palletBarcode", objectId, out JToken palletBarcodeValue))
             {
-                _palletBarcode = palletBarcodeValue.ToObject<string>();
+                _palletBarcode = new Barcode(palletBarcodeValue.ToObject<string>());
             }
 
             if (store.TryGetJSON("palletPath", objectId, out JToken palletPathValue))

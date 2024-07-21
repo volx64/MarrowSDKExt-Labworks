@@ -12,11 +12,7 @@ using UnityEditor;
 namespace SLZ.Marrow.Warehouse
 {
     public partial class Pallet : Scannable, ISerializationCallbackReceiver
-    {	
-		
-		[HideInInspector]
-		public bool deduped;
-
+    {
         [SerializeField]
         private string _author;
         public string Author
@@ -186,8 +182,6 @@ namespace SLZ.Marrow.Warehouse
         public override void Pack(ObjectStore store, JObject json)
         {
             json.Add("barcode", Barcode.ID);
-            if (Barcode.IsValid(BarcodeOld))
-                json.Add("barcodeOld", BarcodeOld.ID);
             json.Add("title", Title);
             json.Add("description", Description);
             json.Add("unlockable", Unlockable);
@@ -235,11 +229,6 @@ namespace SLZ.Marrow.Warehouse
             if (store.TryGetJSON("barcode", objectId, out JToken barcodeValue))
             {
                 Barcode = new Barcode(barcodeValue.ToObject<string>());
-            }
-
-            if (store.TryGetJSON("barcodeOld", objectId, out JToken barcodeOldValue) && Barcode.IsValid(barcodeOldValue.ToObject<string>()))
-            {
-                BarcodeOld = new Barcode(barcodeOldValue.ToObject<string>());
             }
 
             if (store.TryGetJSON("title", objectId, out JToken titleValue))
@@ -375,7 +364,7 @@ namespace SLZ.Marrow.Warehouse
         {
             string palletPath = AssetDatabase.GetAssetPath(this);
             palletPath = System.IO.Path.GetDirectoryName(palletPath);
-            string palletJsonPath = System.IO.Path.Combine(palletPath, "_Pallet_" + MarrowSDK.SanitizeName(this.Barcode) + ".json");
+            string palletJsonPath = System.IO.Path.Combine(palletPath, "_Pallet_" + MarrowSDK.SanitizeName(this.Barcode.ToString()) + ".json");
             PalletPacker.PackAndSaveToJson(this, palletJsonPath);
             AssetDatabase.Refresh();
         }

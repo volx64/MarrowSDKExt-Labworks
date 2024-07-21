@@ -15,6 +15,7 @@
         "UniTask.Linq",
         "Unity.Addressables",
         "Unity.InputSystem",
+        "Unity.Collections",
         "Unity.Mathematics",
         "Unity.Profiling.Core",
         "Unity.ResourceManager",
@@ -30,7 +31,9 @@
         "SLZ.Marrow.VoidLogic.Core",
         "SLZ.Marrow.VoidLogic.Engine",
         "ZString",
-        "ZLogger"
+        "ZLogger",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

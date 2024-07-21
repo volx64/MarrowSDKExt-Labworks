@@ -1,11 +1,11 @@
- 
+using System;
  
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
  
  
- 
+using SLZ.Marrow.Interaction;
  
 using UnityEditor;
 using UnityEditor.AddressableAssets;
@@ -91,7 +91,57 @@ namespace SLZ.MarrowEditor
                 PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.StandaloneWindows64, false);
                 PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new GraphicsDeviceType[] { GraphicsDeviceType.Vulkan });
                 PlayerSettings.SetGraphicsAPIs(BuildTarget.StandaloneWindows64, new GraphicsDeviceType[] { GraphicsDeviceType.Direct3D11 });
-            }, fixMessage = "Switch to the required Graphics APIs" }, });
+            }, fixMessage = "Switch to the required Graphics APIs" }, new MarrowProjectValidation.MarrowValidationRule { message = "Layers must be setup properly for Marrow", Validate = () =>
+            {
+                bool valid = true;
+                Dictionary<int, string> enumDictionary = new Dictionary<int, string>();
+                foreach (MarrowLayers value in Enum.GetValues(typeof(MarrowLayers)))
+                {
+                    enumDictionary.Add((int)value, value.ToString());
+                }
+
+                foreach (var layerPair in enumDictionary)
+                {
+                    string layerName = LayerMask.LayerToName(layerPair.Key);
+                    if (layerName != layerPair.Value)
+                    {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                return valid;
+            }, FixRule = () =>
+            {
+                Dictionary<int, string> enumDictionary = new Dictionary<int, string>();
+                foreach (MarrowLayers value in Enum.GetValues(typeof(MarrowLayers)))
+                {
+                    enumDictionary.Add((int)value, value.ToString());
+                }
+
+                using (var tagManagerObject = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]))
+                {
+                    SerializedProperty layersProp = tagManagerObject.FindProperty("layers");
+                    bool modified = false;
+                    foreach (var layerPair in enumDictionary)
+                    {
+                        SerializedProperty layerProp = layersProp.GetArrayElementAtIndex(layerPair.Key);
+                        if (layerProp.stringValue != layerPair.Value)
+                        {
+                            layerProp.stringValue = layerPair.Value;
+                            modified = true;
+                        }
+                    }
+
+                    if (modified)
+                    {
+                        tagManagerObject.ApplyModifiedProperties();
+                        EditorUtility.SetDirty(tagManagerObject.targetObject);
+                        AssetDatabase.SaveAssetIfDirty(tagManagerObject.targetObject);
+                        AssetDatabase.SaveAssets();
+                    }
+                }
+            }, fixMessage = "Set up proper Marrow Layers" }, });
         }
 
         private static void SetReflectionMethods()

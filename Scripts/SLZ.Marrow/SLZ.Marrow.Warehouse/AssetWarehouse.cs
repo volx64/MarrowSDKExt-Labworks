@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
+ 
  
 using UnityEngine.AddressableAssets;
 using UnityEngine;
@@ -39,13 +39,12 @@ namespace SLZ.Marrow.Warehouse
         private readonly Dictionary<Barcode, PalletManifest> palletManifests = new Dictionary<Barcode, PalletManifest>();
         private readonly Dictionary<int, PalletManifest> modioPalletManifestsLookup = new Dictionary<int, PalletManifest>();
         private readonly List<string> loadedCatalogs = new List<string>();
-        private HashSet<String> gamePallets = new HashSet<string>();
+        private HashSet<Barcode> gamePallets = new HashSet<Barcode>();
         private readonly Dictionary<string, MarrowSettings> marrowGames = new Dictionary<string, MarrowSettings>();
-        private readonly Dictionary<string, MarrowSettings> palletToMarrowGameLookup = new Dictionary<string, MarrowSettings>();
         private readonly Dictionary<string, string> marrowGameLocations = new Dictionary<string, string>();
+        private readonly Dictionary<Barcode, MarrowSettings> palletToMarrowGameLookup = new Dictionary<Barcode, MarrowSettings>();
         private readonly Dictionary<Barcode, Scannable> _inventoryRegistry = new Dictionary<Barcode, Scannable>();
         private readonly Dictionary<Barcode, Scannable> _oldBarcodeInventoryRegistry = new Dictionary<Barcode, Scannable>();
-        private readonly Dictionary<MarrowGuid, Scannable> _slimCodeInventoryRegistry = new Dictionary<MarrowGuid, Scannable>();
         private readonly Dictionary<Barcode, Pallet> _palletRegistry = new Dictionary<Barcode, Pallet>();
         private readonly Dictionary<Barcode, Crate> _crateRegistry = new Dictionary<Barcode, Crate>();
         private readonly Dictionary<Barcode, DataCard> _dataCardRegistry = new Dictionary<Barcode, DataCard>();
@@ -56,7 +55,8 @@ namespace SLZ.Marrow.Warehouse
                 return _inventoryRegistry;
             }
         }
-        
+
+        [ReadOnly]
         [SerializeField]
         private List<string> _allTags = new List<string>();
         public List<string> AllTags
@@ -73,6 +73,7 @@ namespace SLZ.Marrow.Warehouse
         }
 
         [SerializeField]
+        [ReadOnly]
         private bool _initialLoaded = false;
         public bool InitialLoaded
         {
@@ -140,7 +141,6 @@ namespace SLZ.Marrow.Warehouse
                 LogVerbose($"Init {UnityEngine.Random.Range(1, 100)}");
                 Instance = this;
                 Initializing = true;
-                AssetWarehouseMetrics.Reset();
                 palletPackStopWatch.Restart();
                 palletManifestPackStopWatch.Restart();
                 var initStopWatch = new Stopwatch();
@@ -172,9 +172,9 @@ namespace SLZ.Marrow.Warehouse
 
 #endif
                 await LoadInitialPalletsAsync();
-                LogVerbose($"Time spent on Pallet Unpacking: {palletPackStopWatch.Elapsed:h\\:mm\\:ss}");
+                LogVerbose($"Time spent on Pallet Unpacking: {palletPackStopWatch.Elapsed:h\\:mm\\:ss\\.fff}");
                 initStopWatch.Stop();
-                LogVerbose($"Finish init, took {initStopWatch.Elapsed:h\\:mm\\:ss}");
+                LogVerbose($"Finish init, took {initStopWatch.Elapsed:h\\:mm\\:ss\\.fff}");
                 ready = true;
                 _onReady?.Invoke();
                 _onReady = null;
@@ -191,7 +191,7 @@ namespace SLZ.Marrow.Warehouse
             foreach (var palletManifestJsonPath in palletManifestJsonPaths)
             {
                 PalletPacker.TryUnpackManifestJsonFromFile(palletManifestJsonPath, out var palletManifest, out _);
-                if (palletManifest == null || !palletManifests.ContainsKey((Barcode)palletManifest.PalletBarcode))
+                if (palletManifest == null || !palletManifests.ContainsKey(palletManifest.PalletBarcode))
                 {
                     LogVerbose($"AssetWarehouse: PURGE MANIFEST: {palletManifest.PalletBarcode} ({palletManifestJsonPath})");
                     File.Delete(palletManifestJsonPath);
@@ -222,7 +222,6 @@ namespace SLZ.Marrow.Warehouse
             UnloadAllPallets();
             _inventoryRegistry.Clear();
             _oldBarcodeInventoryRegistry.Clear();
-            _slimCodeInventoryRegistry.Clear();
             _palletRegistry.Clear();
             _crateRegistry.Clear();
             _dataCardRegistry.Clear();
@@ -241,7 +240,6 @@ namespace SLZ.Marrow.Warehouse
             OnPalletAdded = null;
             OnCrateAdded = null;
             OnDataCardAdded = null;
-            AssetWarehouseMetrics.Reset();
 #if UNITY_EDITOR
             EditorObjectCrateLookup.Clear();
             EditorObjectGuidCrateLookup.Clear();
@@ -319,85 +317,17 @@ namespace SLZ.Marrow.Warehouse
         }
 
         public Action OnChanged;
-        public Action<string> OnPalletAdded;
-        public Action<string> OnCrateAdded;
-        public Action<string> OnDataCardAdded;
+        public Action<Barcode> OnPalletAdded;
+        public Action<Barcode> OnCrateAdded;
+        public Action<Barcode> OnDataCardAdded;
 #if UNITY_EDITOR
         public Action OnClearEditor;
 #endif
-        public Crate GetCrate(Barcode barcode)
+        public bool TryGetPallet(Barcode barcode, out Pallet pallet)
         {
-            if (barcode == null)
+            if (TryGetScannable<Pallet>(barcode, out Pallet foundPallet))
             {
-                return null;
-            }
-            else
-            {
-                return GetCrate<Crate>(barcode);
-            }
-        }
-
-        public T GetCrate<T>(string barcode)
-            where T : Crate
-        {
-            if (TryGetCrate<T>(barcode, out var crate))
-            {
-                return crate;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public async UniTask<T> GetCrateAsync<T>(string barcode, Action<T> callback = null)
-            where T : Crate
-        {
-            if (!HasCrate<T>(barcode))
-            {
-                await UniTask.WaitUntil(() => InitialLoaded);
-            }
-
-            var completion = new UniTaskCompletionSource<T>();
-            if (TryGetCrate<T>(barcode, out var crate))
-            {
-                completion.TrySetResult(crate);
-                callback?.Invoke(crate);
-            }
-            else
-            {
-                completion.TrySetResult(null);
-            }
-
-            return await completion.Task;
-        }
-
-        public async UniTask<Crate> GetCrateAsync(string barcode, Action<Crate> callback = null, CancellationToken cancellationToken = default)
-        {
-            if (!HasCrate(barcode))
-            {
-                await UniTask.WaitUntil(() => InitialLoaded);
-            }
-
-            var completion = new UniTaskCompletionSource<Crate>();
-            if (TryGetCrate(barcode, out var crate))
-            {
-                completion.TrySetResult(crate);
-                callback?.Invoke(crate);
-            }
-            else
-            {
-                completion.TrySetResult(null);
-            }
-
-            return await completion.Task;
-        }
-
-        public bool TryGetPallet(string barcode, out Pallet pallet)
-        {
-            if (TryGetScannable<Pallet>(barcode, out Pallet foundpallet))
-            {
-                pallet = foundpallet;
+                pallet = foundPallet;
                 return true;
             }
 
@@ -405,19 +335,7 @@ namespace SLZ.Marrow.Warehouse
             return false;
         }
 
-        public bool TryGetPallet(MarrowGuid slimCode, out Pallet pallet)
-        {
-            if (TryGetScannable<Pallet>(slimCode, out Pallet foundpallet))
-            {
-                pallet = foundpallet;
-                return true;
-            }
-
-            pallet = null;
-            return false;
-        }
-
-        public bool TryGetCrate(string barcode, out Crate crate)
+        public bool TryGetCrate(Barcode barcode, out Crate crate)
         {
             if (TryGetCrate<Crate>(barcode, out Crate foundCrate))
             {
@@ -429,7 +347,7 @@ namespace SLZ.Marrow.Warehouse
             return false;
         }
 
-        public bool TryGetCrate<T>(string barcode, out T crateT)
+        public bool TryGetCrate<T>(Barcode barcode, out T crateT)
             where T : Crate
         {
             if (TryGetScannable<T>(barcode, out T foundCrate))
@@ -442,7 +360,7 @@ namespace SLZ.Marrow.Warehouse
             return false;
         }
 
-        public bool TryGetDataCard(string barcode, out DataCard dataCard)
+        public bool TryGetDataCard(Barcode barcode, out DataCard dataCard)
         {
             if (TryGetScannable<DataCard>(barcode, out DataCard foundDataCard))
             {
@@ -454,7 +372,7 @@ namespace SLZ.Marrow.Warehouse
             return false;
         }
 
-        public bool TryGetDataCard<T>(string barcode, out T dataCardT)
+        public bool TryGetDataCard<T>(Barcode barcode, out T dataCardT)
             where T : DataCard
         {
             if (TryGetScannable<T>(barcode, out T foundDataCard))
@@ -467,20 +385,7 @@ namespace SLZ.Marrow.Warehouse
             return false;
         }
 
-        public bool TryGetCrate<T>(MarrowGuid slimCode, out T crateT)
-            where T : Crate
-        {
-            if (TryGetScannable<T>(slimCode, out T foundCrate))
-            {
-                crateT = foundCrate;
-                return true;
-            }
-
-            crateT = null;
-            return false;
-        }
-
-        public bool TryGetScannable(string barcode, out Scannable scannable)
+        public bool TryGetScannable(Barcode barcode, out Scannable scannable)
         {
             if (TryGetScannable<Scannable>(barcode, out Scannable item))
             {
@@ -492,17 +397,17 @@ namespace SLZ.Marrow.Warehouse
             return false;
         }
 
-        public bool TryGetScannable<T>(string barcode, out T scannableT)
+        public bool TryGetScannable<T>(Barcode barcode, out T scannableT)
             where T : Scannable
         {
             scannableT = null;
             bool found = false;
             if (Barcode.IsValid(barcode))
             {
-                found = _inventoryRegistry.TryGetValue((Barcode)barcode, out Scannable scannable) && scannable != null && scannable is T;
+                found = _inventoryRegistry.TryGetValue(barcode, out Scannable scannable) && scannable != null && scannable is T;
                 if (!found)
                 {
-                    found = _oldBarcodeInventoryRegistry.TryGetValue((Barcode)barcode, out scannable) && scannable != null && scannable is T;
+                    found = _oldBarcodeInventoryRegistry.TryGetValue(barcode, out scannable) && scannable != null && scannable is T;
                 }
 
                 if (found)
@@ -514,77 +419,45 @@ namespace SLZ.Marrow.Warehouse
             return found;
         }
 
-        public bool TryGetScannable<T>(MarrowGuid slimCode, out T scannableT)
-            where T : Scannable
-        {
-            scannableT = null;
-            bool found = false;
-            if (MarrowGuid.IsValid(slimCode))
-            {
-                found = _slimCodeInventoryRegistry.TryGetValue(slimCode, out Scannable scannable) && scannable != null && scannable is T;
-                if (found)
-                {
-                    scannableT = (T)scannable;
-                }
-            }
-
-            return found;
-        }
-
-        public bool TryGetSlimCode(string barcode, out MarrowGuid slimCode)
-        {
-            slimCode = new MarrowGuid();
-            if (TryGetScannable(barcode, out var scannable))
-            {
-                if (scannable.SlimCode.IsValid())
-                {
-                    slimCode = scannable.SlimCode;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public bool HasScannable<T>(string barcode)
+        public bool HasScannable<T>(Barcode barcode)
             where T : Scannable
         {
             return TryGetScannable<T>(barcode, out _);
         }
 
-        public bool HasScannable(string barcode)
+        public bool HasScannable(Barcode barcode)
         {
             return HasScannable<Scannable>(barcode);
         }
 
-        public bool HasCrate<T>(string barcode)
+        public bool HasCrate<T>(Barcode barcode)
             where T : Crate
         {
             return HasScannable<T>(barcode);
         }
 
-        public bool HasCrate(string barcode)
+        public bool HasCrate(Barcode barcode)
         {
             return HasCrate<Crate>(barcode);
         }
 
-        public bool HasDataCard<T>(string barcode)
+        public bool HasDataCard<T>(Barcode barcode)
             where T : DataCard
         {
             return HasScannable<T>(barcode);
         }
 
-        public bool HasDataCard(string barcode)
+        public bool HasDataCard(Barcode barcode)
         {
             return HasDataCard<DataCard>(barcode);
         }
 
-        public bool HasPallet(string barcode)
+        public bool HasPallet(Barcode barcode)
         {
             return HasScannable<Pallet>(barcode);
         }
 
-        public bool UnloadCrateAsset(string barcode, bool forcedUnload = false)
+        public bool UnloadCrateAsset(Barcode barcode, bool forcedUnload = false)
         {
             bool unloaded = false;
             if (TryGetCrate(barcode, out var crate))
@@ -659,7 +532,7 @@ namespace SLZ.Marrow.Warehouse
             return unloadCount;
         }
 
-        public int UnloadAllCrateAssets(string excludeBarcode)
+        public int UnloadAllCrateAssets(Barcode excludeBarcode)
         {
             int unloadCount = 0;
             var crates = GetCrates();
@@ -675,7 +548,7 @@ namespace SLZ.Marrow.Warehouse
             return unloadCount;
         }
 
-        public int UnloadAllCrateAssets(params string[] excludeBarcodes)
+        public int UnloadAllCrateAssets(params Barcode[] excludeBarcodes)
         {
             int unloadCount = 0;
             var crates = GetCrates();
@@ -714,7 +587,7 @@ namespace SLZ.Marrow.Warehouse
             return unloadCount;
         }
 
-        public int UnloadAllDataCardAssets(string excludeBarcode)
+        public int UnloadAllDataCardAssets(Barcode excludeBarcode)
         {
             int unloadCount = 0;
             var dataCards = GetDataCards();
@@ -730,7 +603,7 @@ namespace SLZ.Marrow.Warehouse
             return unloadCount;
         }
 
-        public int UnloadAllDataCardAssets(params string[] excludeBarcodes)
+        public int UnloadAllDataCardAssets(Barcode[] excludeBarcodes)
         {
             int unloadCount = 0;
             var dataCards = GetDataCards();
@@ -756,7 +629,7 @@ namespace SLZ.Marrow.Warehouse
             return unloadCount;
         }
 
-        public void UnloadCrate(string barcode)
+        public void UnloadCrate(Barcode barcode)
         {
             if (TryGetCrate(barcode, out var crate))
             {
@@ -768,8 +641,6 @@ namespace SLZ.Marrow.Warehouse
         {
             UnloadCrateAsset(crate, true);
             InventoryRegistry.Remove(crate.Barcode);
-            if (Barcode.IsValid(crate.BarcodeOld) && InventoryRegistry.ContainsKey(crate.BarcodeOld))
-                InventoryRegistry.Remove(crate.BarcodeOld);
             _crateRegistry.Remove(crate.Barcode);
 #if UNITY_EDITOR
             Object removeItem = null;
@@ -798,7 +669,7 @@ namespace SLZ.Marrow.Warehouse
             DestroyRuntimeCreatedScannable(crate);
         }
 
-        public void UnloadDataCard(string barcode)
+        public void UnloadDataCard(Barcode barcode)
         {
             if (TryGetDataCard(barcode, out var dataCard))
             {
@@ -810,8 +681,6 @@ namespace SLZ.Marrow.Warehouse
         {
             UnloadDataCardAsset(dataCard, true);
             InventoryRegistry.Remove(dataCard.Barcode);
-            if (Barcode.IsValid(dataCard.BarcodeOld) && InventoryRegistry.ContainsKey(dataCard.BarcodeOld))
-                InventoryRegistry.Remove(dataCard.BarcodeOld);
             _dataCardRegistry.Remove(dataCard.Barcode);
             DestroyRuntimeCreatedScannable(dataCard);
         }
@@ -849,7 +718,7 @@ namespace SLZ.Marrow.Warehouse
             }
         }
 
-        private async UniTask<Pallet> LoadEditorPallet(Pallet pallet, bool loadPalletJson = true)
+        private async UniTask<Pallet> LoadEditorPallet(Pallet pallet, bool addPallet = true, bool loadPalletJson = true)
         {
             Pallet loadedPallet = pallet;
             if (Application.isPlaying && loadPalletJson)
@@ -860,7 +729,8 @@ namespace SLZ.Marrow.Warehouse
             else
             {
                 LoadAndUpdatePalletManifest(pallet, null, string.Empty, string.Empty);
-                AddPallet(pallet);
+                if (addPallet)
+                    AddPallet(pallet);
             }
 
             return loadedPallet;
@@ -937,15 +807,6 @@ namespace SLZ.Marrow.Warehouse
             {
                 _inventoryRegistry[item.Barcode] = item;
                 added = true;
-                if (Barcode.IsValid(item.BarcodeOld) && item.Barcode != item.BarcodeOld)
-                {
-                    _oldBarcodeInventoryRegistry[new Barcode(item.BarcodeOld)] = item;
-                }
-
-                if (item.SlimCode.IsValid())
-                {
-                    _slimCodeInventoryRegistry[item.SlimCode] = item;
-                }
             }
 
             if (!added)
@@ -956,7 +817,7 @@ namespace SLZ.Marrow.Warehouse
             return added;
         }
 
-        public void ReloadPallet(string barcode)
+        public void ReloadPallet(Barcode barcode)
         {
             if (TryGetPallet(barcode, out var pallet) && palletManifests.TryGetValue((Barcode)barcode, out var palletManifest))
             {
@@ -966,7 +827,7 @@ namespace SLZ.Marrow.Warehouse
             }
         }
 
-        public void UnloadPallet(string barcode)
+        public void UnloadPallet(Barcode barcode)
         {
             if (TryGetPallet(barcode, out var pallet))
             {
@@ -989,8 +850,6 @@ namespace SLZ.Marrow.Warehouse
 
             InventoryRegistry.Remove(pallet.Barcode);
             _palletRegistry.Remove(pallet.Barcode);
-            if (Barcode.IsValid(pallet.BarcodeOld) && InventoryRegistry.ContainsKey(pallet.BarcodeOld))
-                InventoryRegistry.Remove(pallet.BarcodeOld);
             if (palletManifests.TryGetValue(pallet.Barcode, out var palletManifest))
             {
                 palletManifests.Remove(pallet.Barcode);
@@ -1015,7 +874,7 @@ namespace SLZ.Marrow.Warehouse
             }
         }
 
-        public void DeletePallet(string barcode)
+        public void DeletePallet(Barcode barcode)
         {
             if (TryGetPallet(barcode, out var pallet))
             {
@@ -1240,10 +1099,11 @@ namespace SLZ.Marrow.Warehouse
                     Pallet pallet = AssetDatabase.LoadAssetAtPath<Pallet>(path);
                     string fullPalletPath = Path.GetFullPath(path);
                     bool validSDKPath = fullPalletPath.Contains(MarrowSDK.PackagePath) || fullPalletPath.Contains(Path.Combine("PackageCache", MarrowSDK.PACKAGE_NAME));
+                    bool validPackagePath = path.StartsWith("Packages/");
                     bool validPathDirectory = fullPalletPath.Contains(Path.GetFullPath(MarrowSDK.GetMarrowAssetsPath("_Pallets")));
-                    if (!HasPallet(pallet.Barcode) && (validSDKPath || validPathDirectory))
+                    if (!HasPallet(pallet.Barcode) && (validSDKPath || validPackagePath || validPathDirectory))
                     {
-                        var loadedPallet = await LoadEditorPallet(pallet);
+                        var loadedPallet = await LoadEditorPallet(pallet, addPallet: false);
                         if (loadedPallet != null)
                         {
                             loadedPallets.Add(loadedPallet);
@@ -1259,9 +1119,10 @@ namespace SLZ.Marrow.Warehouse
 
                 foreach (var loadedPallet in loadedPallets)
                 {
-                    if (HasPallet(loadedPallet.Barcode))
+                    if (loadedPallet != null)
                     {
                         await LoadPalletDataCards(loadedPallet);
+                        AddPallet(loadedPallet);
                     }
                 }
 
@@ -1359,7 +1220,7 @@ namespace SLZ.Marrow.Warehouse
 
                         palletsString += "]";
                         await LoadMarrowGame(marrowGame, gamePath);
-                        await LoadGamePallets(marrowGame, gamePath, false);
+                        await LoadGamePallets(marrowGame, gamePath, true);
                         LogVerbose($"Loaded Built Game for {marrowGame.GameTitle} at \"{gamePath}\" with pallets: {palletsString}");
                     }
                 }
@@ -1412,7 +1273,7 @@ namespace SLZ.Marrow.Warehouse
             }
         }
 
-        public async UniTask<bool> LoadPalletFromMarrowGame(string palletBarcode, string palletPath)
+        public async UniTask<bool> LoadPalletFromMarrowGame(Barcode palletBarcode, string palletPath)
         {
             bool success = false;
             if (palletToMarrowGameLookup.TryGetValue(palletBarcode, out var marrowGame))
@@ -1464,7 +1325,7 @@ namespace SLZ.Marrow.Warehouse
             bool success = false;
             if (!string.IsNullOrEmpty(palletPath))
             {
-                string catalogName = string.IsNullOrEmpty(customCatalog) ? pallet.Barcode : customCatalog;
+                string catalogName = string.IsNullOrEmpty(customCatalog) ? pallet.Barcode.ID : customCatalog;
                 string catalogPath = palletPath.Replace($"{pallet.Barcode}.pallet.json", $"catalog_{catalogName}.json");
                 catalogPath = catalogPath.Replace($"pallet.json", $"catalog_{catalogName}.json");
                 WarehousePathResolver.EnsureValidPath(ref catalogPath);
@@ -1648,9 +1509,9 @@ namespace SLZ.Marrow.Warehouse
             }
         }
 
-        public bool TryGetPalletManifest(string barcode, out PalletManifest palletManifest)
+        public bool TryGetPalletManifest(Barcode barcode, out PalletManifest palletManifest)
         {
-            return palletManifests.TryGetValue((Barcode)barcode, out palletManifest);
+            return palletManifests.TryGetValue(barcode, out palletManifest);
         }
 
         public bool UpdatePalletManifest(PalletManifest palletManifest, string json = "")
@@ -1674,50 +1535,62 @@ namespace SLZ.Marrow.Warehouse
             bool isPlaying = Application.isPlaying;
 #if UNITY_EDITOR
             isPlaying = isPlaying || EditorApplication.isPlayingOrWillChangePlaymode;
-#endif
-            if (isPlaying)
+            async UniTask<DataCard> BufferLoadDataCard(DataCard dataCard)
             {
-                List<DataCard> loadedDataCards = new List<DataCard>();
-                foreach (var dataCard in pallet.DataCards)
+                DataCard loadedDataCard = dataCard;
+                try
                 {
-                    DataCard loadedDataCard = dataCard;
-                    if (dataCard.IsBundledDataCard())
+                    LogVerbose($"Load DataCard<{loadedDataCard.GetType().Name}> {loadedDataCard.Title}");
+                    var loadCard = await dataCard.DataCardAsset.LoadAssetAsync();
+                    if (loadCard != null)
                     {
-                        try
+                        loadedDataCard = loadCard;
+                        if (isPlaying)
                         {
-                            LogVerbose($"Load DataCard<{loadedDataCard.GetType().Name}> {loadedDataCard.Title}");
-                            var loadCard = await dataCard.DataCardAsset.LoadAssetAsync();
-                            if (loadCard != null)
+                            if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(loadCard)))
                             {
-                                loadedDataCard = loadCard;
-#if UNITY_EDITOR
-                                if (isPlaying)
-                                {
-                                    if (!string.IsNullOrEmpty(AssetDatabase.GetAssetPath(loadCard)))
-                                    {
-                                        loadedDataCard = Object.Instantiate(loadCard);
-                                        loadedDataCard.ExportPackedAssets();
-                                    }
-                                }
-
-#endif
-                                loadedDataCard.DataCardAsset = dataCard.DataCardAsset;
+                                loadedDataCard = Object.Instantiate(loadCard);
+                                loadedDataCard.ExportPackedAssets();
                             }
                         }
-                        catch (Exception e)
-                        {
-                            Debug.LogError($"AssetWarehouse: Failed to load DataCard({dataCard.GetType().Name}) \"{dataCard.Title}\" from Pallet \"{dataCard.Pallet.Title}\"");
-                            loadedDataCard = null;
-                        }
-                    }
 
-                    if (loadedDataCard != null)
-                        loadedDataCards.Add(loadedDataCard);
+                        loadedDataCard.DataCardAsset = dataCard.DataCardAsset;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"AssetWarehouse: Failed to load DataCard({dataCard.GetType().Name}) \"{dataCard.Title}\" from Pallet \"{dataCard.Pallet.Title}\"");
+                    loadedDataCard = null;
                 }
 
+                return loadedDataCard;
+            }
+
+            Stopwatch dataCardStopWatch = new Stopwatch();
+            dataCardStopWatch.Start();
+            if (isPlaying)
+            {
+                var bundledDataCards = new List<DataCard>();
+                var nonBundledDataCards = new List<DataCard>();
+                foreach (var dataCard in pallet.DataCards)
+                {
+                    if (dataCard.IsBundledDataCard())
+                        bundledDataCards.Add(dataCard);
+                    else
+                        nonBundledDataCards.Add(dataCard);
+                }
+
+                var loadedDataCards = await UniTask.WhenAll(bundledDataCards.Select(BufferLoadDataCard));
                 pallet.DataCards.Clear();
+                pallet.DataCards.AddRange(nonBundledDataCards);
                 pallet.DataCards.AddRange(loadedDataCards);
             }
+
+            dataCardStopWatch.Stop();
+            LogVerbose($"Finish load DataCards for {pallet.Title}, took {dataCardStopWatch.Elapsed:h\\:mm\\:ss\\.fff}");
+#endif
+#if !UNITY_EDITOR
+#endif
         }
 
 #if UNITY_EDITOR

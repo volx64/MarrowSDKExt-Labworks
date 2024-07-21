@@ -217,7 +217,7 @@ namespace SLZ.MarrowEditor
             {
                 tempCrate = Crate.CreateCrate(GetCrateType(crateType), pallet, crateTitle, null);
                 barcode = new Barcode(tempCrate.Barcode);
-                barcodeField.value = barcode;
+                barcodeField.value = barcode.ID;
             }
             else
             {
@@ -261,9 +261,9 @@ namespace SLZ.MarrowEditor
 
         private void SetDefaults(TextField barcodeField, TextField crateTitleTextField, EnumField crateTypeEnumField, ObjectField createCratePalletField, ObjectField assetReferenceField)
         {
-            if (!string.IsNullOrEmpty(barcode))
+            if (!string.IsNullOrEmpty(barcode.ID))
             {
-                barcodeField.value = barcode;
+                barcodeField.value = barcode.ID;
             }
 
             if (!string.IsNullOrEmpty(crateTitle))

@@ -1,5 +1,7 @@
- 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEditor;
@@ -40,9 +42,71 @@ namespace SLZ.MarrowEditor
             dedupeGroup = settings.FindGroup(GENERATED_DEDUPE_GROUP_NAME);
             if (dedupeGroup != null)
             {
-                EditorUtility.SetDirty(dedupeGroup);
+                BundledAssetGroupSchema schema = dedupeGroup.GetSchema<BundledAssetGroupSchema>();
+                schema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
+                schema.IncludeAddressInCatalog = false;
+                AddressablesManager.SetCustomBuildPath(schema, buildPath);
+                AddressablesManager.SetCustomLoadPath(schema, loadPath);
+                var updateSchema = dedupeGroup.GetSchema<ContentUpdateGroupSchema>();
+                updateSchema.StaticContent = false;
+                EditorUtility.SetDirty(schema);
+                AssetDatabase.SaveAssetIfDirty(schema);
+                EditorUtility.SetDirty(updateSchema);
+                AssetDatabase.SaveAssetIfDirty(updateSchema);
                 dedupeGroup.Name = DEDUPE_GROUP_NAME;
-                dedupeGroup.name = dedupeGroup.Name;
+                dedupeGroup.name = DEDUPE_GROUP_NAME;
+                EditorUtility.SetDirty(dedupeGroup);
+                AssetDatabase.SaveAssetIfDirty(dedupeGroup);
+                AssetDatabase.ImportAsset(AssetDatabase.GetAssetPath(dedupeGroup));
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                var dedupeSchemas = dedupeGroup.Schemas.ToList();
+                settings.groups.Remove(dedupeGroup);
+                settings.SetDirty(AddressableAssetSettings.ModificationEvent.GroupRemoved, dedupeGroup, true, true);
+                RegenerateGUID(dedupeGroup, out var metaGuid);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                dedupeGroup = settings.FindGroup(DEDUPE_GROUP_NAME);
+                AddressablesManager.GroupGuidField.SetValue(dedupeGroup, metaGuid);
+                EditorUtility.SetDirty(dedupeGroup);
+                AssetDatabase.SaveAssetIfDirty(dedupeGroup);
+                dedupeGroup = settings.FindGroup(DEDUPE_GROUP_NAME);
+                foreach (var dedupeSchema in dedupeSchemas)
+                {
+                    dedupeGroup.Schemas.Remove(dedupeSchema);
+                    settings.SetDirty(AddressableAssetSettings.ModificationEvent.GroupSchemaRemoved, dedupeSchema, true, true);
+                }
+
+                foreach (var dedupeSchema in dedupeSchemas)
+                {
+                    var loadedSchema = RegenerateGUID(dedupeSchema, out _, true);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                    dedupeGroup.AddSchema(loadedSchema, true);
+                }
+
+                dedupeGroup.SetDirty(AddressableAssetSettings.ModificationEvent.GroupAdded, dedupeGroup, true, true);
+                EditorUtility.SetDirty(dedupeGroup);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                T RegenerateGUID<T>(T assetObject, out string newGuid, bool reimport = false)
+                    where T : UnityEngine.Object
+                {
+                    string assetPath = AssetDatabase.GetAssetPath(assetObject);
+                    var md5 = System.Security.Cryptography.MD5.Create();
+                    var hash = md5.ComputeHash(System.Text.Encoding.Default.GetBytes(assetPath));
+                    string metaGuid = new Guid(hash).ToString().Replace("-", "");
+                    newGuid = metaGuid;
+                    string metaPath = AssetDatabase.GetTextMetaFilePathFromAssetPath(assetPath);
+                    string yamlContent = System.IO.File.ReadAllText(metaPath);
+                    string replacedContent = Regex.Replace(yamlContent, @"guid:\s*(\w+)", "guid: " + metaGuid);
+                    System.IO.File.WriteAllText(metaPath, replacedContent);
+                    if (reimport)
+                        AssetDatabase.ImportAsset(assetPath);
+                    return AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                }
+
+                EditorUtility.SetDirty(dedupeGroup);
                 List<string> addedAddresses = new List<string>();
                 foreach (var entry in dedupeGroup.entries)
                 {
@@ -78,13 +142,6 @@ namespace SLZ.MarrowEditor
                     }
                 }
 
-                BundledAssetGroupSchema schema = dedupeGroup.GetSchema<BundledAssetGroupSchema>();
-                schema.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;
-                schema.IncludeAddressInCatalog = false;
-                AddressablesManager.SetCustomBuildPath(schema, buildPath);
-                AddressablesManager.SetCustomLoadPath(schema, loadPath);
-                var updateSchema = dedupeGroup.GetSchema<ContentUpdateGroupSchema>();
-                updateSchema.StaticContent = false;
                 Debug.Log("Deduper: Created Dedupe Group with " + dedupeGroup.entries.Count + " assets: " + string.Format("{0:hh\\:mm\\:ss}", timer.Elapsed));
                 if (stripOptions != StripOptions.None)
                 {

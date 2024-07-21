@@ -12,7 +12,7 @@ namespace SLZ.MarrowEditor
 {
     public class ScannableTreeViewItem : TreeViewItem
     {
-        public string barcode = Barcode.EMPTY;
+        public Barcode barcode;
     }
 
     public class AssetWarehouseTreeView : TreeView
@@ -592,8 +592,8 @@ namespace SLZ.MarrowEditor
             if (AssetWarehouse.ready)
             {
                 var dragItems = FindRows(args.draggedItemIDs);
-                List<string> crateBarcodes = new List<string>();
-                List<string> palletBarcodes = new List<string>();
+                List<Barcode> crateBarcodes = new List<Barcode>();
+                List<Barcode> palletBarcodes = new List<Barcode>();
                 List<Object> allScannables = new List<Object>();
                 foreach (var dragItem in dragItems)
                 {

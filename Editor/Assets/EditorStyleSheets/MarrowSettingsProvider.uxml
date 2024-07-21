@@ -12,17 +12,20 @@
             <uie:PropertyField binding-path="_defaultLoadingLevel" name="loading-level" />
             <uie:PropertyField binding-path="_defaultControllerRig" name="controller-rig" />
             <uie:PropertyField binding-path="_defaultPlayerRig" name="player-rig" />
+            <uie:PropertyField binding-path="_defaultFadeoutVfx" name="fadeout-vfx" />
             <uie:PropertyField binding-path="_uiEventSystem" name="ui-event-system" />
             <uie:PropertyField binding-path="_defaultAudioMixer" name="audio-mixer" />
             <uie:PropertyField binding-path="_audioPlayer" name="audio-player" />
         </ui:VisualElement>
         <ui:Label text="DataCards" display-tooltip-when-elided="true" name="datacard-header" style="-unity-font-style: bold; margin-top: 12px;" />
         <ui:VisualElement name="datacards-container" style="padding-left: 15px;">
+            <uie:PropertyField binding-path="_campaignData" name="campaign-data" />
             <uie:PropertyField binding-path="_playerTag" name="player-tag" />
             <uie:PropertyField binding-path="_beingTag" name="being-tag" />
             <uie:PropertyField binding-path="_loadMusic" name="load-music" />
             <uie:PropertyField binding-path="_loadAmbience" name="load-ambience" />
             <uie:PropertyField binding-path="_defaultAmbience" name="default-ambience" />
+            <uie:PropertyField binding-path="_defaultSurfaceDataCard" name="default-surfacedatacard" />
         </ui:VisualElement>
         <ui:Label text="Optional Settings" display-tooltip-when-elided="true" name="optional-header" style="-unity-font-style: bold; margin-top: 12px;" />
         <ui:VisualElement name="optional-container" style="padding-left: 15px;">

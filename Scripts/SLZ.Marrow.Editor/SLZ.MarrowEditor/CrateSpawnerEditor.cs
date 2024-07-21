@@ -22,9 +22,7 @@ namespace SLZ.MarrowEditor
         private static GUIContent colliderBoundsGizmoIcon = null;
         private static GUIContent materialIconOn = null;
         private static GUIContent materialIconOff = null;
-        private bool helpText = false;
-        private bool defaultInspector = false;
-        private int padding = 5;
+        private CrateSpawner script;
         public virtual void OnEnable()
         {
             EditorApplication.contextualPropertyMenu += OnPropertyContextMenu;
@@ -34,18 +32,18 @@ namespace SLZ.MarrowEditor
             useQueryProperty = serializedObject.FindProperty("useQuery");
             manualModeProperty = serializedObject.FindProperty("manualMode");
             onPlaceEventProperty = serializedObject.FindProperty("onSpawnEvent");
-            var castedTarget = (CrateSpawner)target;
-            if (castedTarget.transform.gameObject.activeInHierarchy)
+            script = (CrateSpawner)target;
+            if (script.transform.gameObject.activeInHierarchy)
             {
-                if (PrefabUtility.GetPrefabAssetType(castedTarget.transform.gameObject) == PrefabAssetType.Regular)
+                if (PrefabUtility.GetPrefabAssetType(script.transform.gameObject) == PrefabAssetType.Regular && PrefabUtility.GetOutermostPrefabInstanceRoot(script.transform.gameObject) == script.transform.gameObject)
                 {
-                    PrefabUtility.UnpackPrefabInstance(castedTarget.transform.gameObject, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-                    Collider[] collidersAroundSpawnable = Physics.OverlapSphere(castedTarget.transform.position, 1f, ~0, QueryTriggerInteraction.Collide);
+                    PrefabUtility.UnpackPrefabInstance(script.transform.gameObject, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                    Collider[] collidersAroundSpawnable = Physics.OverlapSphere(script.transform.position, 1f, ~0, QueryTriggerInteraction.Collide);
                     foreach (Collider col in collidersAroundSpawnable)
                     {
                         if (col != null && col.GetComponent<ZoneLink>() != null)
                         {
-                            castedTarget.transform.parent = col.transform;
+                            script.transform.parent = col.transform;
                         }
                     }
                 }
@@ -104,6 +102,13 @@ namespace SLZ.MarrowEditor
             Toggle useQueryToggle = tree.Q<Toggle>("useQueryToggle");
             PropertyField crateQuery = tree.Q<PropertyField>("crateQuery");
             PropertyField spawnableCrateReference = tree.Q<PropertyField>("spawnableCrateReference");
+            spawnableCrateReference.RegisterValueChangeCallback(evt =>
+            {
+                if (ScannableReference.IsValid(script.spawnableCrateReference))
+                {
+                    script.EditorUpdateName(true);
+                }
+            });
             if (serializedObject.FindProperty("policyData") == null)
             {
                 tree.Q<PropertyField>("policyData").style.display = DisplayStyle.None;

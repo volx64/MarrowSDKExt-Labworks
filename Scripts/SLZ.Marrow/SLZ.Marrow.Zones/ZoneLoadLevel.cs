@@ -1,11 +1,8 @@
  
  
-using SLZ.Marrow.Interaction;
 using SLZ.Marrow.Warehouse;
 using UnityEngine;
 using UnityEngine.Events;
-
- 
 
 namespace SLZ.Marrow.Zones
 {
@@ -13,11 +10,7 @@ namespace SLZ.Marrow.Zones
     public class ZoneLoadLevel : ZoneItem
     {
         public LevelCrateReference level;
-        public LevelCrateReference loadScreenLevel;
+        public LevelCrateReference loadScreenLevelOverride;
         public UnityAction OnLevelSwitch;
-
-        protected override void OnEnter(MarrowEntity activatorEntity)
-        {
-        }
     }
 }

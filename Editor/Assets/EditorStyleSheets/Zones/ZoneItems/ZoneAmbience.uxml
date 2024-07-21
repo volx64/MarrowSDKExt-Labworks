@@ -13,7 +13,7 @@
             <uie:EnumField label="Event Types" name="EventTypesFiltered" binding-path="EventTypesFiltered" value="Primary" type="SLZ.MarrowEditor.Zones.ZoneAmbienceEditor+EventTypesFiltered, SLZ.Marrow.Editor" tooltip="The type of trigger event that will activate this ZoneAmbience" />
             <uie:PropertyField name="_eventTypes" binding-path="_eventTypes" style="display: none;" />
             <ui:Label text="Ambience" display-tooltip-when-elided="true" name="ambienceLabel" style="-unity-font-style: bold; margin-top: 10px;" />
-            <uie:ObjectField label="Clip Main" name="clipMain" binding-path="clipMain" type="UnityEngine.AudioClip, UnityEngine.AudioModule" />
+            <uie:PropertyField binding-path="clipMain" name="clipMain" style="display: none;" />
             <uie:PropertyField name="ambientTrack" binding-path="ambientTrack" label="Ambient Track" tooltip="Ambience to play." />
             <uie:PropertyField name="volume" binding-path="volume" label="Volume" />
             <uie:PropertyField name="loop" binding-path="loop" label="Loop" />

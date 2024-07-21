@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using SLZ.Marrow.Warehouse;
 using UnityEditor;
 using UnityEditor.Search;
@@ -19,7 +20,7 @@ namespace SLZ.MarrowEditor
             window.CollectScannables();
         }
 
-        public static ScannableSelector Create(Type scannableType, Action<string> onCrateSelected)
+        public static ScannableSelector Create(Type scannableType, Action<Barcode> onCrateSelected)
         {
             ScannableSelector window = EditorWindow.CreateInstance<ScannableSelector>();
             window.scannableType = scannableType;
@@ -32,7 +33,7 @@ namespace SLZ.MarrowEditor
         }
 
         public Type scannableType = typeof(Scannable);
-        public Action<string> onCrateSelected;
+        public Action<Barcode> onCrateSelected;
         private ListView listView;
         private ToolbarSearchField scannableSearch;
         private List<Scannable> allScannables = new List<Scannable>();
@@ -206,6 +207,13 @@ namespace SLZ.MarrowEditor
                 return string.Empty;
             });
             queryEngine.AddFilter("b", scannable => scannable.Barcode.ToString());
+            FocusSearchBar().Forget();
+        }
+
+        private async UniTaskVoid FocusSearchBar()
+        {
+            await UniTask.NextFrame();
+            scannableSearch.Focus();
         }
 
         private void OnDisable()

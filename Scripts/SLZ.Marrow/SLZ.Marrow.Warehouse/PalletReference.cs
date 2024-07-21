@@ -14,6 +14,10 @@ namespace SLZ.Marrow.Warehouse
         {
         }
 
+        public PalletReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public PalletReference(string barcode) : base(barcode)
         {
         }

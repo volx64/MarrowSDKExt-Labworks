@@ -172,7 +172,7 @@ namespace SLZ.MarrowEditor
             for (int i = settings.groups.Count - 1; i >= 0; i--)
             {
                 var group = settings.groups[i];
-                if (group.HasSchema<PalletGroupSchema>() && group.Name.Contains(pallet.Barcode) && group.entries.Count == 0)
+                if (group.HasSchema<PalletGroupSchema>() && group.Name.Contains(pallet.Barcode.ID) && group.entries.Count == 0)
                 {
                     settings.RemoveGroup(group);
                     foreach (var kvp in scannableTypeToGroup)
@@ -197,7 +197,10 @@ namespace SLZ.MarrowEditor
         private static AddressableAssetGroup SetupPalletGroup(AddressableAssetSettings settings, Pallet pallet, Type scannableType)
         {
             string groupName = $"{MarrowSDK.SanitizeID(pallet.Title)}_{MarrowSDK.SanitizeName(Crate.GetCrateName(scannableType))}s";
-            AddressableAssetGroup group = settings.CreateGroup(groupName, false, false, true, AddressablesManager.PackedPalletGroupTemplate.SchemaObjects);
+            AddressableAssetGroup group = settings.CreateGroup(groupName, false, false, false, AddressablesManager.PackedPalletGroupTemplate.SchemaObjects);
+            string groupGUID = AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(group)).ToString();
+            AddressablesManager.GroupGuidField.SetValue(group, groupGUID);
+            group.SetDirty(AddressableAssetSettings.ModificationEvent.GroupAdded, group, true, true);
             if (group.HasSchema<PalletGroupSchema>())
             {
                 group.GetSchema<PalletGroupSchema>().Pallet = pallet;

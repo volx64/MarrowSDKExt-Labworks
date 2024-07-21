@@ -52,6 +52,11 @@ namespace SLZ.MarrowEditor
                 toolResults = TextureStreamTool.ApplyTextureStreamingToAllTextures();
             }
 
+            if (GUILayout.Button(new GUIContent("Fix ALL Textures", "Fixes all textures including ones in packages"), MarrowGUIStyles.DefaultButton))
+            {
+                toolResults = TextureStreamTool.ApplyTextureStreamingToAllTextures(forcePackages: true);
+            }
+
             preventFoldout = EditorGUILayout.Foldout(preventFoldout, "Prevent Streaming Textures");
             if (preventFoldout)
             {

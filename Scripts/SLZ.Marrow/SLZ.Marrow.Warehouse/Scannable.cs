@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using SLZ.Marrow.Utilities;
+ 
 using SLZ.Serialize;
 using UnityEngine;
  
@@ -58,36 +58,6 @@ namespace SLZ.Marrow.Warehouse
             set
             {
                 _barcode = value;
-            }
-        }
-
-        [SerializeField]
-        private Barcode _barcodeOld;
-        public Barcode BarcodeOld
-        {
-            get
-            {
-                return _barcodeOld;
-            }
-
-            set
-            {
-                _barcodeOld = value;
-            }
-        }
-
-        [SerializeField]
-        private MarrowGuid _slimCode;
-        public MarrowGuid SlimCode
-        {
-            get
-            {
-                return _slimCode;
-            }
-
-            set
-            {
-                _slimCode = value;
             }
         }
 
@@ -187,10 +157,6 @@ namespace SLZ.Marrow.Warehouse
         public virtual void Pack(ObjectStore store, JObject json)
         {
             json.Add("barcode", Barcode.ID);
-            if (Barcode.IsValid(BarcodeOld))
-                json.Add("barcodeOld", BarcodeOld.ID);
-            if (SlimCode.IsValid())
-                json.Add("slimCode", SlimCode.ToHexString());
             json.Add("title", Title);
             json.Add("description", Description);
             json.Add("unlockable", Unlockable);
@@ -203,16 +169,6 @@ namespace SLZ.Marrow.Warehouse
             if (store.TryGetJSON("barcode", objectId, out JToken barcodeValue))
             {
                 Barcode = new Barcode(barcodeValue.ToObject<string>());
-            }
-
-            if (store.TryGetJSON("barcodeOld", objectId, out JToken barcodeOldValue) && Barcode.IsValid(barcodeOldValue.ToObject<string>()))
-            {
-                BarcodeOld = new Barcode(barcodeOldValue.ToObject<string>());
-            }
-
-            if (store.TryGetJSON("slimCode", objectId, out JToken slimCodeValue))
-            {
-                SlimCode = new MarrowGuid(slimCodeValue.ToString());
             }
 
             if (store.TryGetJSON("title", objectId, out JToken titleValue))
@@ -318,24 +274,6 @@ namespace SLZ.Marrow.Warehouse
         private void GenerateBarcodeMenuButton()
         {
             GenerateBarcode(true);
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssetIfDirty(this);
-        }
-
-        [ContextMenu("Archive Barcode")]
-        private void ArchiveBarcodeMenuButton()
-        {
-            BarcodeOld = Barcode;
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssetIfDirty(this);
-        }
-
-        [ContextMenu("Generate Slimcode")]
-        private void GenerateSlimCode()
-        {
-            var generatedCode = SlimCode;
-            generatedCode.GenerateGuid();
-            SlimCode = generatedCode;
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssetIfDirty(this);
         }

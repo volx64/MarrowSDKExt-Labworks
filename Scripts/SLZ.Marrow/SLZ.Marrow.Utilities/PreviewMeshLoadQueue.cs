@@ -138,7 +138,7 @@ namespace SLZ.Marrow.Utilities
 
         public static void QueueLoadMesh(MarrowAssetT<Mesh> marrowMesh)
         {
-            if (!queuedMeshes.Contains(marrowMesh.AssetGUID) && !loadingMeshes.Contains(marrowMesh.AssetGUID) && !loadedMeshes.Contains(marrowMesh.AssetGUID) && !failedLoading.Contains(marrowMesh.AssetGUID))
+            if (!string.IsNullOrEmpty(marrowMesh.AssetGUID) && !queuedMeshes.Contains(marrowMesh.AssetGUID) && !loadingMeshes.Contains(marrowMesh.AssetGUID) && !loadedMeshes.Contains(marrowMesh.AssetGUID) && !failedLoading.Contains(marrowMesh.AssetGUID))
             {
                 Func<UniTask<Mesh>> loadMeshTaskDelegate = () => marrowMesh.LoadAssetAsync<Mesh>(cancellationToken.Token);
                 loadMeshQueue.Enqueue(new Tuple<string, Func<UniTask<Mesh>>>(marrowMesh.AssetGUID, loadMeshTaskDelegate));

@@ -11,7 +11,7 @@
         <ui:VisualElement name="fieldsContainer">
             <ui:Toggle label="Use Query" name="useQueryToggle" binding-path="useQueryToggle" />
             <uie:PropertyField name="spawnableCrateReference" binding-path="spawnableCrateReference" label="Spawnable Crate Ref" style="margin-bottom: 5px;" />
-            <uie:PropertyField name="policyData" binding-path="policyData" />
+            <uie:PropertyField name="policyData" label="Policy Data" binding-path="policyData" />
             <ui:Toggle label="Manual Mode" name="manualModeToggle" binding-path="manualMode" style="margin-bottom: 5px;" />
             <uie:PropertyField name="onSpawnEvent" binding-path="onSpawnEvent" label="On Spawn Event" style="margin-bottom: 5px;" />
             <ui:IMGUIContainer name="imguiRuntimeDebugContainer" />

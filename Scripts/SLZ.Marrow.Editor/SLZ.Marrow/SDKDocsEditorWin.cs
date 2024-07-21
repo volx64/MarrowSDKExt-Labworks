@@ -13,7 +13,6 @@ namespace SLZ.Marrow
     public class SDKDocsEditorWin : EditorWindow
     {
         private VisualElement docsContainer;
-        private string videoIconPath = MarrowSDK.GetPackagePath("Editor/Assets/Zone_Icons/icon_marrow_video.png");
         private string assetWarehouseIconPath = MarrowSDK.GetPackagePath("Editor/Assets/Icons/Warehouse/");
         private string editorImagePath = MarrowSDK.GetPackagePath("Editor/SDKDocumentation/Images");
         [MenuItem("Stress Level Zero/MarrowSDK Documentation", false, 5000)]
@@ -46,7 +45,7 @@ namespace SLZ.Marrow
                     SearchDocs(sdkDocsSearchField.value.ToString());
                 }
             });
-            Texture2D videoIcon = EditorGUIUtility.Load(videoIconPath) as Texture2D;
+            Texture2D videoIcon = EditorGUIUtility.Load(Path.Join(assetWarehouseIconPath, "monovideo.png")) as Texture2D;
             Texture2D palletIcon = EditorGUIUtility.Load(Path.Join(assetWarehouseIconPath, "pallet.png")) as Texture2D;
             Texture2D spawnerIcon = EditorGUIUtility.Load(Path.Join(assetWarehouseIconPath, "crate-ball.png")) as Texture2D;
             Texture2D levelIcon = EditorGUIUtility.Load(Path.Join(assetWarehouseIconPath, "crate-level.png")) as Texture2D;
@@ -198,19 +197,127 @@ namespace SLZ.Marrow
 
                 ForceScrollUpdate(sdkDocsScrollView);
             };
+            Image docsMarrowSDKSetupVideoImage = new Image();
+            docsMarrowSDKSetupVideoImage.image = videoIcon;
+            docsMarrowSDKSetupVideoImage.StretchToParentSize();
+            Button docsMarrowSDKSetupVideoButton = rootVisualElement.Q<Button>("docsMarrowSDKSetupVideoButton");
+            docsMarrowSDKSetupVideoButton.Add(docsMarrowSDKSetupVideoImage);
+            docsMarrowSDKSetupVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/sdkintro");
+            };
+            Image docsAvatarCrateVideoImage = new Image();
+            docsAvatarCrateVideoImage.image = videoIcon;
+            docsAvatarCrateVideoImage.StretchToParentSize();
+            Button docsAvatarCrateVideoButton = rootVisualElement.Q<Button>("docsAvatarCrateVideoButton");
+            docsAvatarCrateVideoButton.Add(docsAvatarCrateVideoImage);
+            docsAvatarCrateVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/avatars");
+            };
+            Image docsLevelCrateVideoImage = new Image();
+            docsLevelCrateVideoImage.image = videoIcon;
+            docsLevelCrateVideoImage.StretchToParentSize();
+            Button docsLevelCrateVideoButton = rootVisualElement.Q<Button>("docsLevelCrateVideoButton");
+            docsLevelCrateVideoButton.Add(docsLevelCrateVideoImage);
+            docsLevelCrateVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/levels");
+            };
+            Image docsImpactPropertiesVideoImage = new Image();
+            docsImpactPropertiesVideoImage.image = videoIcon;
+            docsImpactPropertiesVideoImage.StretchToParentSize();
+            Button docsImpactPropertiesVideoButton = rootVisualElement.Q<Button>("docsImpactPropertiesVideoButton");
+            docsImpactPropertiesVideoButton.Add(docsImpactPropertiesVideoImage);
+            docsImpactPropertiesVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/impactproperties");
+            };
+            Image docsZoneBasicsVideoImage = new Image();
+            docsZoneBasicsVideoImage.image = videoIcon;
+            docsZoneBasicsVideoImage.StretchToParentSize();
+            Button docsZoneBasicsVideoButton = rootVisualElement.Q<Button>("docsZoneBasicsVideoButton");
+            docsZoneBasicsVideoButton.Add(docsZoneBasicsVideoImage);
+            docsZoneBasicsVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zonebasics");
+            };
+            Image docsZoneLinksVideoImage = new Image();
+            docsZoneLinksVideoImage.image = videoIcon;
+            docsZoneLinksVideoImage.StretchToParentSize();
+            Button docsZoneLinksVideoButton = rootVisualElement.Q<Button>("docsZoneLinksVideoButton");
+            docsZoneLinksVideoButton.Add(docsZoneLinksVideoImage);
+            docsZoneLinksVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zonelinking");
+            };
+            Image docsZoneMusicVideoImage = new Image();
+            docsZoneMusicVideoImage.image = videoIcon;
+            docsZoneMusicVideoImage.StretchToParentSize();
+            Button docsZoneMusicVideoButton = rootVisualElement.Q<Button>("docsZoneMusicVideoButton");
+            docsZoneMusicVideoButton.Add(docsZoneMusicVideoImage);
+            docsZoneMusicVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zonemusic");
+            };
+            Image docsZoneAmbienceVideoImage = new Image();
+            docsZoneAmbienceVideoImage.image = videoIcon;
+            docsZoneAmbienceVideoImage.StretchToParentSize();
+            Button docsZoneAmbienceVideoButton = rootVisualElement.Q<Button>("docsZoneAmbienceVideoButton");
+            docsZoneAmbienceVideoButton.Add(docsZoneAmbienceVideoImage);
+            docsZoneAmbienceVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zonemusic");
+            };
+            Image docsZoneEventsVideoImage = new Image();
+            docsZoneEventsVideoImage.image = videoIcon;
+            docsZoneEventsVideoImage.StretchToParentSize();
+            Button docsZoneEventsVideoButton = rootVisualElement.Q<Button>("docsZoneEventsVideoButton");
+            docsZoneEventsVideoButton.Add(docsZoneEventsVideoImage);
+            docsZoneEventsVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zoneevents");
+            };
+            Image docsZoneLoadLevelVideoImage = new Image();
+            docsZoneLoadLevelVideoImage.image = videoIcon;
+            docsZoneLoadLevelVideoImage.StretchToParentSize();
+            Button docsZoneLoadLevelVideoButton = rootVisualElement.Q<Button>("docsZoneLoadLevelVideoButton");
+            docsZoneLoadLevelVideoButton.Add(docsZoneLoadLevelVideoImage);
+            docsZoneLoadLevelVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zoneevents");
+            };
+            Image docsSceneChunksVideoImage = new Image();
+            docsSceneChunksVideoImage.image = videoIcon;
+            docsSceneChunksVideoImage.StretchToParentSize();
+            Button docsSceneChunksVideoButton = rootVisualElement.Q<Button>("docsSceneChunksVideoButton");
+            docsSceneChunksVideoButton.Add(docsSceneChunksVideoImage);
+            docsSceneChunksVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/scenechunks");
+            };
+            Image docsZoneAggroVideoImage = new Image();
+            docsZoneAggroVideoImage.image = videoIcon;
+            docsZoneAggroVideoImage.StretchToParentSize();
+            Button docsZoneAggroVideoButton = rootVisualElement.Q<Button>("docsZoneAggroVideoButton");
+            docsZoneAggroVideoButton.Add(docsZoneAggroVideoImage);
+            docsZoneAggroVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zoneaggrospawnforce");
+            };
+            Image docsSpawnForceVideoImage = new Image();
+            docsSpawnForceVideoImage.image = videoIcon;
+            docsSpawnForceVideoImage.StretchToParentSize();
+            Button docsSpawnForceVideoButton = rootVisualElement.Q<Button>("docsSpawnForceVideoButton");
+            docsSpawnForceVideoButton.Add(docsSpawnForceVideoImage);
+            docsSpawnForceVideoButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://slz.gg/zoneaggrospawnforce");
+            };
             Button docsMarrowSDKSetupButton = rootVisualElement.Q<Button>("docsMarrowSDKSetupButton");
             docsMarrowSDKSetupButton.clickable.clicked += () =>
             {
                 Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki#project-setup");
-            };
-            Button docsMarrowSDKSetupVideoButton = rootVisualElement.Q<Button>("docsMarrowSDKSetupVideoButton");
-            Image docsVideoButtonImageSetup = new Image();
-            docsVideoButtonImageSetup.image = videoIcon;
-            docsMarrowSDKSetupVideoButton.Add(docsVideoButtonImageSetup);
-            docsVideoButtonImageSetup.StretchToParentSize();
-            docsMarrowSDKSetupVideoButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://www.youtube.com/watch?v=AKylo9lPqXQ");
             };
             Button docsCrateSpawnersButton = rootVisualElement.Q<Button>("docsCrateSpawnersButton");
             docsCrateSpawnersButton.clickable.clicked += () =>
@@ -222,12 +329,72 @@ namespace SLZ.Marrow
             {
                 Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/Avatars");
             };
-            Button docsCreateNewPalletButton = rootVisualElement.Q<Button>("docsCreateNewPalletButton");
+            Button docsLevelCrateButton = rootVisualElement.Q<Button>("docsLevelCrateButton");
+            docsLevelCrateButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/Levels");
+            };
+            Button docsPalletPackButton = rootVisualElement.Q<Button>("docsCustomPalletsButton");
+            docsPalletPackButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/PalletsAndCrates");
+            };
+            Button docsImpactPropertiesButton = rootVisualElement.Q<Button>("docsImpactPropertiesButton");
+            docsImpactPropertiesButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ImpactProperties");
+            };
+            Button docsZonesButton = rootVisualElement.Q<Button>("docsZonesButton");
+            docsZonesButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/Zones");
+            };
+            Button docsZoneLinksButton = rootVisualElement.Q<Button>("docsZoneLinksButton");
+            docsZoneLinksButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneLinks");
+            };
+            Button docsZoneEventsButton = rootVisualElement.Q<Button>("docsZoneEventsButton");
+            docsZoneEventsButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneEvents");
+            };
+            Button docsZoneLoadLevelButton = rootVisualElement.Q<Button>("docsZoneLoadLevelButton");
+            docsZoneLoadLevelButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneLoadLevel");
+            };
+            Button docsZoneMusicButton = rootVisualElement.Q<Button>("docsZoneMusicButton");
+            docsZoneMusicButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneMusic");
+            };
+            Button docsZoneAmbienceButton = rootVisualElement.Q<Button>("docsZoneAmbienceButton");
+            docsZoneAmbienceButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneAmbience");
+            };
+            Button docsSceneChunksButton = rootVisualElement.Q<Button>("docsSceneChunksButton");
+            docsSceneChunksButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/SceneChunks");
+            };
+            Button docsZoneAggroButton = rootVisualElement.Q<Button>("docsZoneAggroButton");
+            docsZoneAggroButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneAggro");
+            };
+            Button docsSpawnForceButton = rootVisualElement.Q<Button>("docsSpawnForceButton");
+            docsSpawnForceButton.clickable.clicked += () =>
+            {
+                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/SpawnForce");
+            };
             Image docsCreateNewPalletImage = new Image();
             docsCreateNewPalletImage.image = palletIcon;
-            docsCreateNewPalletButton.Add(docsCreateNewPalletImage);
             docsCreateNewPalletImage.StretchToParentSize();
             docsCreateNewPalletImage.style.marginRight = 110;
+            Button docsCreateNewPalletButton = rootVisualElement.Q<Button>("docsCreateNewPalletButton");
+            docsCreateNewPalletButton.Add(docsCreateNewPalletImage);
             docsCreateNewPalletButton.clickable.clicked += () =>
             {
                 CreatePalletEditorWindow.ShowCreatePalletWindowEditor();
@@ -236,15 +403,6 @@ namespace SLZ.Marrow
             docsGameInstallLocatorButton.clickable.clicked += () =>
             {
                 GameInstallDirectoryEditorWindow.ShowGameInstallDirWindowEditor();
-            };
-            Button docsAvatarCrateVideoButton = rootVisualElement.Q<Button>("docsAvatarCrateVideoButton");
-            Image docsVideoButtonImageAvatar = new Image();
-            docsVideoButtonImageAvatar.image = videoIcon;
-            docsAvatarCrateVideoButton.Add(docsVideoButtonImageAvatar);
-            docsVideoButtonImageAvatar.StretchToParentSize();
-            docsAvatarCrateVideoButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://www.youtube.com/watch?v=nH7HB7u7GtM");
             };
             VisualElement docsChecklistAvatarBonesImageBodyContainer = rootVisualElement.Q<VisualElement>("docsChecklistAvatarBonesImageBodyContainer");
             Image docsChecklistAvatarBonesImageBody = new Image
@@ -278,46 +436,6 @@ namespace SLZ.Marrow
             docsChecklistAvatarBonesImageHandButton.clickable.clicked += () =>
             {
                 Application.OpenURL("https://raw.githubusercontent.com/wiki/StressLevelZero/MarrowSDK/Images/Avatar/optional_bones_hand.png");
-            };
-            Button docsLevelCrateButton = rootVisualElement.Q<Button>("docsLevelCrateButton");
-            docsLevelCrateButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/Levels");
-            };
-            Button docsPalletPackButton = rootVisualElement.Q<Button>("docsCustomPalletsButton");
-            docsPalletPackButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/BuildPallet");
-            };
-            Button docsZonesButton = rootVisualElement.Q<Button>("docsZonesButton");
-            docsZonesButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/Zones");
-            };
-            Button docsZoneEventsButton = rootVisualElement.Q<Button>("docsZoneEventsButton");
-            docsZoneEventsButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneEvents");
-            };
-            Button docsZoneMusicButton = rootVisualElement.Q<Button>("docsZoneMusicButton");
-            docsZoneMusicButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneMusic");
-            };
-            Button docsZoneAmbienceButton = rootVisualElement.Q<Button>("docsZoneAmbienceButton");
-            docsZoneAmbienceButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneAmbience");
-            };
-            Button docsZoneLoadLevelButton = rootVisualElement.Q<Button>("docsZoneLoadLevelButton");
-            docsZoneLoadLevelButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/ZoneLoadLevel");
-            };
-            Button docsSceneChunksButton = rootVisualElement.Q<Button>("docsSceneChunksButton");
-            docsSceneChunksButton.clickable.clicked += () =>
-            {
-                Application.OpenURL("https://github.com/StressLevelZero/MarrowSDK/wiki/SceneChunks");
             };
             Button docsAssetWarehouseButton = rootVisualElement.Q<Button>("docsAssetWarehouseButton");
             docsAssetWarehouseButton.clickable.clicked += () =>
@@ -362,6 +480,16 @@ namespace SLZ.Marrow
             docsSpawnersAWSpawnWindowButton.clickable.clicked += () =>
             {
                 AWSpawnerEditorWin.ShowAWSpawnerWindowEditor();
+            };
+            Button docsSurfaceDataPainterOverlayButton = rootVisualElement.Q<Button>("docsSurfaceDataPainterOverlayButton");
+            docsSurfaceDataPainterOverlayButton.clickable.clicked += () =>
+            {
+                SurfaceDataPainterOverlay.DoWithInstances(instance => instance.displayed = true);
+                SurfaceDataPainterOverlay.DoWithInstances(instance => instance.collapsed = false);
+            };
+            Button docsIPUtilsWindowButton = rootVisualElement.Q<Button>("docsIPUtilsWindowButton");
+            docsIPUtilsWindowButton.clickable.clicked += () =>
+            {
             };
             Button docsChecklistLevelUtilButton = rootVisualElement.Q<Button>("docsChecklistLevelUtilButton");
             docsChecklistLevelUtilButton.clickable.clicked += () =>
@@ -761,6 +889,22 @@ namespace SLZ.Marrow
             });
             MarrowSDKPreferences.docsChecklistLevelLayoutEnvironmentPref = EditorPrefs.GetBool("docsChecklistLevelLayoutEnvironmentPref", false);
             docsChecklistLevelLayoutEnvironment.SetValueWithoutNotify(MarrowSDKPreferences.docsChecklistLevelLayoutEnvironmentPref);
+            Toggle docsChecklistLevelImpactProperties = rootVisualElement.Q<Toggle>("docsChecklistLevelImpactProperties");
+            docsChecklistLevelImpactProperties.RegisterValueChangedCallback(evt =>
+            {
+                if (docsChecklistLevelImpactProperties.value)
+                {
+                    MarrowSDKPreferences.docsChecklistLevelImpactPropertiesPref = true;
+                }
+                else
+                {
+                    MarrowSDKPreferences.docsChecklistLevelImpactPropertiesPref = false;
+                }
+
+                EditorPrefs.SetBool("docsChecklistLevelImpactPropertiesPref", MarrowSDKPreferences.docsChecklistLevelImpactPropertiesPref);
+            });
+            MarrowSDKPreferences.docsChecklistLevelImpactPropertiesPref = EditorPrefs.GetBool("docsChecklistLevelImpactPropertiesPref", false);
+            docsChecklistLevelImpactProperties.SetValueWithoutNotify(MarrowSDKPreferences.docsChecklistLevelImpactPropertiesPref);
             Toggle docsChecklistLevelLights = rootVisualElement.Q<Toggle>("docsChecklistLevelLights");
             docsChecklistLevelLights.RegisterValueChangedCallback(evt =>
             {
@@ -1101,6 +1245,7 @@ namespace SLZ.Marrow
             docsLevelChecklistResetButton.clickable.clicked += () =>
             {
                 docsChecklistLevelLayoutEnvironment.value = false;
+                docsChecklistLevelImpactProperties.value = false;
                 docsChecklistLevelLights.value = false;
                 docsChecklistLevelLightProbes.value = false;
                 docsChecklistLevelReflectionProbes.value = false;

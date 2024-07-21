@@ -25,11 +25,11 @@ namespace SLZ.MarrowEditor
             return texturePaths;
         }
 
-        public static TextureStreamToolResults ApplyTextureStreamingToAllTextures()
+        public static TextureStreamToolResults ApplyTextureStreamingToAllTextures(bool forcePackages = false)
         {
             var allTextures = GetAllTexture2DInProject();
             Debug.Log("TextureStreamTool: Found " + allTextures.Count + " textures, enabling Texture Streaming...");
-            var results = ApplyTextureStreamingToTextures(allTextures, false);
+            var results = ApplyTextureStreamingToTextures(allTextures, false, forcePackages: forcePackages);
             return results;
         }
 
@@ -120,7 +120,7 @@ namespace SLZ.MarrowEditor
         }
 
         private static Dictionary<string, string> textureResults = new Dictionary<string, string>();
-        public static TextureStreamToolResults ApplyTextureStreamingToTextures(List<string> assetPaths, bool analysisMode = false)
+        public static TextureStreamToolResults ApplyTextureStreamingToTextures(List<string> assetPaths, bool analysisMode = false, bool forcePackages = false)
         {
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
@@ -145,7 +145,7 @@ namespace SLZ.MarrowEditor
                 textureImporter = importer as TextureImporter;
                 if (textureImporter == null)
                     continue;
-                bool appliedChanges = ApplyTextureStreamingToTexture(textureImporter, assetPath, analysisMode);
+                bool appliedChanges = ApplyTextureStreamingToTexture(textureImporter, assetPath, analysisMode, forcePackages: forcePackages);
                 if (appliedChanges && !analysisMode)
                 {
                     texturesToReimport.Add(assetPath);
@@ -231,7 +231,7 @@ namespace SLZ.MarrowEditor
             return new TextureStreamToolResults(assetPaths.Count, enabledList, alreadyList, skippedList, disabledList, updatedList, appliedTextures, alreadyStreaming, skippedTextures, disabledTextures, updatedTextures);
         }
 
-        private static bool ApplyTextureStreamingToTexture(TextureImporter importer, string assetPath, bool analysisMode = false)
+        private static bool ApplyTextureStreamingToTexture(TextureImporter importer, string assetPath, bool analysisMode = false, bool forcePackages = false)
         {
             bool enableStreaming = true;
             bool changed = false;
@@ -266,8 +266,11 @@ namespace SLZ.MarrowEditor
 
                 if (assetPath.StartsWith("Packages"))
                 {
-                    enableStreaming = false;
-                    disableReasons.Add("Package");
+                    if (!forcePackages)
+                    {
+                        enableStreaming = importer.streamingMipmaps;
+                        disableReasons.Add("Package");
+                    }
                 }
 
                 if (!importer.mipmapEnabled)

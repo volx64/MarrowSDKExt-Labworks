@@ -13,8 +13,8 @@ namespace SLZ.Marrow.Warehouse
         public List<BoneTagReference> _tags = new List<BoneTagReference>();
         public List<BoneTagReference> Tags { get => _tags; }
 
-        private HashSet<string> _cachedTagBarcodes = new HashSet<string>();
-        public HashSet<string> CachedTagBarcodes
+        private HashSet<Barcode> _cachedTagBarcodes = new HashSet<Barcode>();
+        public HashSet<Barcode> CachedTagBarcodes
         {
             get
             {
@@ -38,7 +38,7 @@ namespace SLZ.Marrow.Warehouse
             if (!initializeOnly || !initialCache)
             {
                 initialCache = true;
-                _cachedTagBarcodes ??= new HashSet<string>();
+                _cachedTagBarcodes ??= new HashSet<Barcode>();
                 _cachedTagBarcodes.Clear();
                 if (_inheritTags != null)
                 {

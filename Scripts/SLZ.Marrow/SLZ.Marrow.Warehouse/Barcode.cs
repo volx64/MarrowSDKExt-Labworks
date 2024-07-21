@@ -1,7 +1,5 @@
- 
 using System;
- 
- 
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 
@@ -27,8 +25,6 @@ namespace SLZ.Marrow.Warehouse
             private set => _shortCode = value;
         }
 
-        private string _group;
-        private string _name;
         public static string separator = ".";
         public static readonly string EMPTY = BuildBarcode("null", "empty", "barcode");
         private static readonly string EMPTY_OLD = "00000000-0000-0000-0000-000000000000";
@@ -76,24 +72,58 @@ namespace SLZ.Marrow.Warehouse
             return sb.ToString();
         }
 
-        public static bool IsValidSize(string barcode)
+        public static bool IsValidSize(Barcode barcode)
         {
-            if (string.IsNullOrEmpty(barcode))
+            if (barcode == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(barcode.ID))
             {
                 return true;
             }
 
-            return barcode.Length <= MAX_SIZE;
+            return barcode.ID.Length <= MAX_SIZE;
         }
 
-        public static bool IsValid(string barcode)
+        public static bool IsValidSize(string barcodeString)
+        {
+            if (string.IsNullOrEmpty(barcodeString))
+            {
+                return true;
+            }
+
+            return barcodeString.Length <= MAX_SIZE;
+        }
+
+        public static bool IsValid(Barcode barcode)
         {
             bool valid = true;
-            if (string.IsNullOrEmpty(barcode))
+            if (barcode == null)
             {
                 valid = false;
             }
-            else if (barcode == EMPTY || barcode == EMPTY_OLD)
+            else if (string.IsNullOrEmpty(barcode.ID))
+            {
+                valid = false;
+            }
+            else if (barcode.ID == EMPTY || barcode.ID == EMPTY_OLD)
+            {
+                valid = false;
+            }
+
+            return valid;
+        }
+
+        public static bool IsValidString(string barcodeString)
+        {
+            bool valid = true;
+            if (string.IsNullOrEmpty(barcodeString))
+            {
+                valid = false;
+            }
+            else if (barcodeString == EMPTY || barcodeString == EMPTY_OLD)
             {
                 valid = false;
             }
@@ -121,8 +151,6 @@ namespace SLZ.Marrow.Warehouse
             }
         }
 
-        public static implicit operator string(Barcode b) => (b == null ? EMPTY : b.ToString());
-        public static explicit operator Barcode(string s) => new Barcode(s);
         public override string ToString() => ID;
         public override bool Equals(object obj)
         {
@@ -195,18 +223,17 @@ namespace SLZ.Marrow.Warehouse
             }
 #endif
         }
+
+        public static bool operator true(Barcode barcode) => IsValid(barcode);
+        public static bool operator false(Barcode barcode) => !IsValid(barcode);
+        public static implicit operator bool(Barcode barcode) => IsValid(barcode);
     }
 
     public static class BarcodeExtensions
     {
-        public static bool IsValid(this Barcode barcode)
-        {
-            return Barcode.IsValid(barcode.ID);
-        }
-
-        public static bool IsValidSize(this Barcode barcode)
-        {
-            return Barcode.IsValidSize(barcode);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValid(this Barcode barcode) => Barcode.IsValid(barcode);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidSize(this Barcode barcode) => Barcode.IsValidSize(barcode);
     }
 }

@@ -37,7 +37,7 @@ namespace SLZ.Marrow.Warehouse
                 Debug.LogWarning("PalletPacker Validate: Failed, pallet author is empty");
             }
 
-            if (pallet.Barcode == Barcode.EMPTY)
+            if (!Barcode.IsValid(pallet.Barcode))
             {
                 valid = false;
                 Debug.LogWarning("PalletPacker Validate: Failed, pallet barcode is empty, generate now");

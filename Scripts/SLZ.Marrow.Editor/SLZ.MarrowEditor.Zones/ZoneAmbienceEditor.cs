@@ -117,6 +117,8 @@ namespace SLZ.MarrowEditor.Zones
                 eventTypesFieldInfo.SetValue(script, EventTypes.Primary);
             }
 
+#if false
+#endif
             Button marrowDocsButton = tree.Q<Button>("marrowDocsButton");
             marrowDocsButton.clickable.clicked += () =>
             {

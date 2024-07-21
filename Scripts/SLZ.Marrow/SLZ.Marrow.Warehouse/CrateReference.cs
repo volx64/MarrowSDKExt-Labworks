@@ -33,6 +33,10 @@ namespace SLZ.Marrow.Warehouse
         {
         }
 
+        public CrateReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public CrateReference(string barcode) : base(barcode)
         {
         }
@@ -71,6 +75,10 @@ namespace SLZ.Marrow.Warehouse
         {
         }
 
+        public CrateReferenceT(Barcode barcode) : base(barcode)
+        {
+        }
+
         public CrateReferenceT(string barcode) : base(barcode)
         {
         }
@@ -100,6 +108,10 @@ namespace SLZ.Marrow.Warehouse
     [Serializable]
     public class GenericCrateReference : CrateReferenceT<Crate>
     {
+        public GenericCrateReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public GenericCrateReference(string barcode) : base(barcode)
         {
         }
@@ -112,6 +124,10 @@ namespace SLZ.Marrow.Warehouse
     [Serializable]
     public class GameObjectCrateReference : CrateReferenceT<GameObjectCrate>
     {
+        public GameObjectCrateReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public GameObjectCrateReference(string barcode) : base(barcode)
         {
         }
@@ -124,6 +140,10 @@ namespace SLZ.Marrow.Warehouse
     [Serializable]
     public class SpawnableCrateReference : CrateReferenceT<SpawnableCrate>
     {
+        public SpawnableCrateReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public SpawnableCrateReference(string barcode) : base(barcode)
         {
         }
@@ -136,6 +156,10 @@ namespace SLZ.Marrow.Warehouse
     [Serializable]
     public class AvatarCrateReference : CrateReferenceT<AvatarCrate>
     {
+        public AvatarCrateReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public AvatarCrateReference(string barcode) : base(barcode)
         {
         }
@@ -148,6 +172,10 @@ namespace SLZ.Marrow.Warehouse
     [Serializable]
     public class LevelCrateReference : CrateReferenceT<LevelCrate>
     {
+        public LevelCrateReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public LevelCrateReference(string barcode) : base(barcode)
         {
         }
@@ -160,6 +188,10 @@ namespace SLZ.Marrow.Warehouse
     [Serializable]
     public class VFXCrateReference : CrateReferenceT<VFXCrate>
     {
+        public VFXCrateReference(Barcode barcode) : base(barcode)
+        {
+        }
+
         public VFXCrateReference(string barcode) : base(barcode)
         {
         }

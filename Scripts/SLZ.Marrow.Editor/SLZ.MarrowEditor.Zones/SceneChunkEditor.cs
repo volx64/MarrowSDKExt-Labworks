@@ -131,6 +131,7 @@ namespace SLZ.MarrowEditor.Zones
                                 Handles.Label(zoneCenter + new Vector3(0.25f, -0.5f, 0f), "Add to Chunk", scHandleStyleAdd);
                                 if (addZoneCullerHandle)
                                 {
+                                    Undo.RecordObject(script, "Added ZC " + zoneCuller.name + " to SceneChunk " + script.name);
                                     List<ZoneCuller> zoneCullerList = script.zoneCullers.ToList();
                                     zoneCullerList.Add(zoneCuller);
                                     script.zoneCullers = zoneCullerList.ToArray();
@@ -155,6 +156,7 @@ namespace SLZ.MarrowEditor.Zones
                         Handles.Label(zoneCenter + new Vector3(0.25f, -0.5f, 0f), "Rem from Chunk", scHandleStyleRem);
                         if (delZoneCullerHandle)
                         {
+                            Undo.RecordObject(script, "Removed ZC " + zoneCuller.name + " from SceneChunk " + script.name);
                             List<ZoneCuller> zoneCullerList = script.zoneCullers.ToList();
                             zoneCullerList.Remove(zoneCuller);
                             script.zoneCullers = zoneCullerList.ToArray();

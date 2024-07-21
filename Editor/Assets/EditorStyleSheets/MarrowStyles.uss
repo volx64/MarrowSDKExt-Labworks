@@ -99,9 +99,23 @@
 }
 
 .linkCursor {
-	cursor: link;
+    cursor: link;
 }
 
 .linkCursor .unity-foldout__input {
-	cursor: link;
+    cursor: link;
+}
+
+.zoneoverlay .unity-object-field__label {
+    min-width: 80px;
+}
+
+.sdpainter .unity-toggle__label {
+    min-width: 0;
+    padding-right: 5px;
+    margin-top: 2px;
+}
+
+.forceHover {
+    background-color: rgba(96, 91, 32, 0.49);
 }

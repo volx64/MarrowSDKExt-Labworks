@@ -69,12 +69,6 @@ namespace SLZ.Marrow.Warehouse
             throw new System.NotImplementedException();
         }
 
-        public void ReSpawnSpawnable()
-        {
-            UnityEngine.Debug.Log("Hollowed Method: SLZ.Marrow.Warehouse.CrateSpawner.SetSpawnable()");
-            throw new System.NotImplementedException();
-        }
-
 #if UNITY_EDITOR
         [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
         private static void DrawPreviewGizmo(CrateSpawner spawner, GizmoType gizmoType)
@@ -111,12 +105,17 @@ namespace SLZ.Marrow.Warehouse
             gameObject.name = "CrateSpawner";
         }
 
-        public void EditorUpdateName()
+        public void EditorUpdateName(bool force = false)
         {
-            if (gameObject.name == "CrateSpawner" && AssetWarehouse.ready && !Application.isPlaying && AssetWarehouse.Instance.TryGetCrate(GetCrateReference().Barcode, out var crate))
+            if ((force || gameObject.name == "CrateSpawner") && AssetWarehouse.ready && !Application.isPlaying && AssetWarehouse.Instance.TryGetCrate(GetCrateReference().Barcode, out var crate))
             {
-                gameObject.name = useQuery ? "CrateSpawner (query)" : $"CrateSpawner ({crate.Title})";
-                GameObjectUtility.EnsureUniqueNameForSibling(gameObject);
+                string newName = useQuery ? "CrateSpawner (query)" : $"CrateSpawner ({crate.Title})";
+                if (gameObject.name != newName)
+                {
+                    gameObject.name = newName;
+                    GameObjectUtility.EnsureUniqueNameForSibling(gameObject);
+                    EditorUtility.SetDirty(this);
+                }
             }
         }
 

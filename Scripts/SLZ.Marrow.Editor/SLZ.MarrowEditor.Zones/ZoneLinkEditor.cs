@@ -72,7 +72,9 @@ namespace SLZ.MarrowEditor.Zones
                     }
                 }
 
+                Undo.RecordObject(script, "ZoneLinks DragDrop Updated");
                 script.zoneLinks = zoneLinksList.ToArray();
+                EditorUtility.SetDirty(script);
                 List<ZoneLink> zoneList = UnityEngine.Object.FindObjectsOfType<ZoneLink>().ToList();
                 foreach (ZoneLink zoneLink in zoneList)
                 {
@@ -82,7 +84,9 @@ namespace SLZ.MarrowEditor.Zones
                         if (!linksOfZoneLink.Contains(zoneLink))
                         {
                             linksOfZoneLink.Add(zoneLink);
+                            Undo.RecordObject(zl, "OneWay Link fix during DragDrop");
                             zl.zoneLinks = linksOfZoneLink.ToArray();
+                            EditorUtility.SetDirty(zl);
                         }
                     }
                 }

@@ -25,7 +25,8 @@
         "Unity.XR.Management",
         "Unity.XR.Oculus",
         "Unity.Profiling.Core",
-        "ModResources"
+        "ModResources",
+        "ZString"
     ],
     "includePlatforms": [
         "Editor"

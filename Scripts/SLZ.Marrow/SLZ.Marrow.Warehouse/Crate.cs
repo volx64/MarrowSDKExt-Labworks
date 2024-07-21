@@ -135,7 +135,6 @@ namespace SLZ.Marrow.Warehouse
                 if (generateBarcode)
                 {
                     crate.GenerateBarcode();
-                    crate.SlimCode.GenerateGuid();
                 }
             }
 

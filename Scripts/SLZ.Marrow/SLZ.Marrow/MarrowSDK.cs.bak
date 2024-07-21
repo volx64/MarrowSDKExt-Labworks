@@ -21,9 +21,10 @@ namespace SLZ.Marrow
     public static class MarrowSDK
     {
         public const string SDK_NAME = "Marrow SDK";
-        public const string SDK_VERSION = "0.6.0";
+        public const string SDK_VERSION = "1.1.0";
+        public const string MIN_COMPATIBLE_VERSION = "0.6.0";
         public const string DEV_NAME = "Stress Level Zero";
-        public const string PACKAGE_NAME = "com.stresslevelzero.marrow.sdk";
+        public const string PACKAGE_NAME = "com.stresslevelzero.marrow.extended.sdk";
         public static readonly string PROJ4_NAME = "BONELAB";
         public static readonly string[] GAME_NAMES =
         {
@@ -36,6 +37,43 @@ namespace SLZ.Marrow
         public const string BUILT_PALLETS_NAME = "BuiltPallets";
         public const string EDITOR_ASSETS_FOLDER = "_MarrowAssets";
 #endif
+        private static Version _sdkVersion;
+        public static Version SDKVersion
+        {
+            get
+            {
+                if (_sdkVersion == null)
+                {
+                    _sdkVersion = new Version(SDK_VERSION);
+                }
+
+                return _sdkVersion;
+            }
+        }
+
+        private static Version _minCompatibleVersion;
+        public static Version MinCompatibleVersion
+        {
+            get
+            {
+                if (_minCompatibleVersion == null)
+                {
+                    _minCompatibleVersion = new Version(MIN_COMPATIBLE_VERSION);
+                }
+
+                return _minCompatibleVersion;
+            }
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void PrecachePaths()
+        {
+            _runtimeModsPath = Path.Combine(Application.persistentDataPath, RUNTIME_MODS_DIRECTORY_NAME);
+            _installStagingPath = Path.Combine(Application.persistentDataPath, INSTALL_STAGING_DIRECTORY_NAME);
+            _modsCachePath = Path.Combine(Application.persistentDataPath, "com.unity.addressables");
+            _modSettingsPath = Path.Combine(Application.persistentDataPath, "settings_mods.json");
+        }
+
         private static string _runtimeModsPath;
         public static string RuntimeModsPath
         {
@@ -43,7 +81,7 @@ namespace SLZ.Marrow
             {
                 if (string.IsNullOrEmpty(_runtimeModsPath))
                 {
-                    _runtimeModsPath = System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, RUNTIME_MODS_DIRECTORY_NAME);
+                    _runtimeModsPath = Path.Combine(Application.persistentDataPath, RUNTIME_MODS_DIRECTORY_NAME);
                 }
 
                 if (!Directory.Exists(_runtimeModsPath))
@@ -62,7 +100,7 @@ namespace SLZ.Marrow
             {
                 if (string.IsNullOrEmpty(_installStagingPath))
                 {
-                    _installStagingPath = System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, INSTALL_STAGING_DIRECTORY_NAME);
+                    _installStagingPath = Path.Combine(Application.persistentDataPath, INSTALL_STAGING_DIRECTORY_NAME);
                 }
 
                 if (!Directory.Exists(_installStagingPath))
@@ -81,7 +119,7 @@ namespace SLZ.Marrow
             {
                 if (string.IsNullOrEmpty(_modsCachePath))
                 {
-                    _modsCachePath = System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, "com.unity.addressables");
+                    _modsCachePath = Path.Combine(Application.persistentDataPath, "com.unity.addressables");
                 }
 
                 return _modsCachePath;
@@ -95,7 +133,7 @@ namespace SLZ.Marrow
             {
                 if (string.IsNullOrEmpty(_modSettingsPath))
                 {
-                    _modSettingsPath = System.IO.Path.Combine(UnityEngine.Application.persistentDataPath, "settings_mods.json");
+                    _modSettingsPath = Path.Combine(Application.persistentDataPath, "settings_mods.json");
                 }
 
                 return _modSettingsPath;
@@ -189,8 +227,8 @@ namespace SLZ.Marrow
 
         public static string GetPackagePath(string path)
         {
-            if (!string.IsNullOrEmpty(MarrowSDK.PackagePath) && !string.IsNullOrEmpty(path))
-                return Path.Combine(MarrowSDK.PackagePath, path);
+            if (!string.IsNullOrEmpty(PackagePath) && !string.IsNullOrEmpty(path))
+                return Path.Combine(PackagePath, path);
             else
                 return path;
         }
@@ -198,21 +236,21 @@ namespace SLZ.Marrow
         public static string GetMarrowAssetsPath(string path = "")
         {
             if (!string.IsNullOrEmpty(path))
-                return Path.Combine("Assets", MarrowSDK.EDITOR_ASSETS_FOLDER, path);
+                return Path.Combine("Assets", EDITOR_ASSETS_FOLDER, path);
             else
-                return Path.Combine("Assets", MarrowSDK.EDITOR_ASSETS_FOLDER);
+                return Path.Combine("Assets", EDITOR_ASSETS_FOLDER);
         }
 
         public static string GetMarrowAssetsPath(params string[] paths)
         {
             var pathArr = new List<string>();
             pathArr.Add("Assets");
-            pathArr.Add(MarrowSDK.EDITOR_ASSETS_FOLDER);
+            pathArr.Add(EDITOR_ASSETS_FOLDER);
             pathArr.AddRange(paths);
             if (paths.Length > 0)
                 return Path.Combine(pathArr.ToArray());
             else
-                return Path.Combine("Assets", MarrowSDK.EDITOR_ASSETS_FOLDER);
+                return Path.Combine("Assets", EDITOR_ASSETS_FOLDER);
         }
 
         public static string GetLibraryPath(string path)
@@ -229,7 +267,7 @@ namespace SLZ.Marrow
         {
             if (invalidFilenameCharacters == null)
             {
-                var invalids = System.IO.Path.GetInvalidFileNameChars().ToList();
+                var invalids = Path.GetInvalidFileNameChars().ToList();
                 invalids.Add('[');
                 invalids.Add(']');
                 invalids.Add('-');
@@ -248,6 +286,33 @@ namespace SLZ.Marrow
 
             Regex regex = new Regex("[^a-zA-Z0-9.]");
             return regex.Replace(id, "");
+        }
+
+        public static bool? CheckVersionCompatibility(string otherVersion)
+        {
+            try
+            {
+                Version parsedVersion = new Version(otherVersion);
+                return CheckVersionCompatibility(parsedVersion);
+            }
+            catch (Exception _)
+            {
+                return null;
+            }
+        }
+
+        public static bool CheckVersionCompatibility(Version otherVersion)
+        {
+            return VersionGreaterOrEqualIgnorePatch(otherVersion, MinCompatibleVersion) && VersionGreaterOrEqualIgnorePatch(SDKVersion, otherVersion);
+        }
+
+        private static bool VersionGreaterOrEqualIgnorePatch(Version version1, Version version2)
+        {
+            if (version1.Major != version2.Major)
+                return version1.Major >= version2.Major;
+            if (version1.Minor != version2.Minor)
+                return version1.Minor >= version2.Minor;
+            return true;
         }
     }
 }

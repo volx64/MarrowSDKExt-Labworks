@@ -45,12 +45,12 @@ namespace SLZ.MarrowEditor
             window.Show();
         }
 
-        public static void ShowWindow(Type dataCardType, Action<DataCard> onCreate = null)
+        public static void ShowWindow(Type dataCardType, Pallet pallet, Action<DataCard> onCreate = null)
         {
             if (typeof(DataCard).IsAssignableFrom(dataCardType))
             {
                 var window = GetWindow<DataCardCreatorEditor>("Create DataCard");
-                window.Initialize(dataCardType);
+                window.Initialize(dataCardType, pallet);
                 if (onCreate != null)
                     window.OnCreate += onCreate;
                 window.Show();

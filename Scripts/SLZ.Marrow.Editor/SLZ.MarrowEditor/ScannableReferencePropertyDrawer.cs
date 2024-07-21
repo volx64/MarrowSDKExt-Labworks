@@ -146,7 +146,7 @@ namespace SLZ.MarrowEditor
                 ScannableSelector.Create(scannableObjectType, barcode =>
                 {
                     property.serializedObject.Update();
-                    SetBarcodeValue(barcode);
+                    SetBarcodeValue(barcode.ID);
                     property.serializedObject.ApplyModifiedProperties();
                     LoadScannableObjectFromBarcode(property);
                     AutoModeDetection(property);
@@ -158,7 +158,7 @@ namespace SLZ.MarrowEditor
                 if (obj.newValue != null)
                 {
                     property.serializedObject.Update();
-                    SetBarcodeValue((obj.newValue as Scannable)?.Barcode);
+                    SetBarcodeValue((obj.newValue as Scannable)?.Barcode.ID);
                     property.serializedObject.ApplyModifiedProperties();
                     if (obj.newValue is IScannable scannable)
                     {
@@ -168,7 +168,7 @@ namespace SLZ.MarrowEditor
                 else
                 {
                     property.serializedObject.Update();
-                    SetBarcodeValue(Barcode.EmptyBarcode());
+                    SetBarcodeValue(Barcode.EMPTY);
                     property.serializedObject.ApplyModifiedProperties();
                 }
 
@@ -237,7 +237,7 @@ namespace SLZ.MarrowEditor
             Scannable scannable = null;
             if (AssetWarehouse.ready)
             {
-                AssetWarehouse.Instance.TryGetScannable(GetBarcodeValue(), out scannable);
+                AssetWarehouse.Instance.TryGetScannable(new Barcode(GetBarcodeValue()), out scannable);
                 scannableObjectField.SetValueWithoutNotify(scannable);
                 if (scannable != null)
                     SetScannableFieldText(scannable);
@@ -278,7 +278,7 @@ namespace SLZ.MarrowEditor
 
         private void AutoModeDetection(SerializedProperty property)
         {
-            showBarcode = scannableObjectField.value == null && Barcode.IsValid(GetBarcodeValue());
+            showBarcode = scannableObjectField.value == null && Barcode.IsValidString(GetBarcodeValue());
         }
 
         private void SetMode(bool showBarcode, SerializedProperty property)

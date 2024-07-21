@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 694737450}
-  m_IndirectSpecularColor: {r: 0.17302758, g: 0.21636602, b: 0.30062556, a: 1}
+  m_IndirectSpecularColor: {r: 0.17178254, g: 0.21531238, b: 0.2999593, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -137,6 +137,8 @@ GameObject:
   - component: {fileID: 90023517}
   - component: {fileID: 90023516}
   - component: {fileID: 90023515}
+  - component: {fileID: 90023520}
+  - component: {fileID: 90023519}
   m_Layer: 29
   m_Name: Zone A
   m_TagString: Untagged
@@ -221,6 +223,58 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 10, y: 4.9321737, z: 10}
   m_Center: {x: 0, y: -1.2160871, z: 0}
+--- !u!114 &90023519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90023513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51218f05709cd3b489b9474b25c7ca37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _zoneLink: {fileID: 90023516}
+  _eventTypes: 1
+  clipMain: {fileID: 0}
+  ambientTrack:
+    _barcode:
+      _id: null.empty.barcode
+  volume: 0.1
+  fadeInTime: 3
+  fadeOutTime: 3
+  reverbSettings: {fileID: 11400000, guid: d4339902aeef3834fa4d0c25ce4ac7b7, type: 2}
+--- !u!114 &90023520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 90023513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad478d1a8ed63844bb44d1e9bd388f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _zone: {fileID: 90023517}
+  _zoneLink: {fileID: 90023516}
+  beingTags:
+    _tags:
+    - _boneTag:
+        _barcode:
+          _id: SLZ.Marrow.BoneTag.Being
+      _invert: 0
+    _operator: 0
+    _crates: []
+  playerTag:
+    _tags:
+    - _boneTag:
+        _barcode:
+          _id: SLZ.Marrow.BoneTag.Player
+      _invert: 0
+    _operator: 0
+    _crates: []
 --- !u!1 &106376109
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,6 +949,7 @@ GameObject:
   - component: {fileID: 1556329305}
   - component: {fileID: 1556329304}
   - component: {fileID: 1556329303}
+  - component: {fileID: 1556329307}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -980,6 +1035,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1556329307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1556329302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0396b7cb33830d24a8749a5b11c36a6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _surfaceDataCard:
+    _barcode:
+      _id: null.empty.barcode
+  surfaceData: {fileID: 0}
+  decalType: 0
+  megaPascalModifier: 1
 --- !u!1 &1563943240
 GameObject:
   m_ObjectHideFlags: 0

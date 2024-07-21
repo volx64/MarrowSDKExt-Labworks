@@ -22,7 +22,7 @@ namespace SLZ.MarrowEditor
         protected Editor assetEditor = null;
         protected bool hasAssetPreview = false;
         protected PreviewRenderUtility previewRender = null;
-        protected string previewTarget = null;
+        protected Barcode previewTargetBarcode = null;
         protected Texture previewTexture = null;
         protected GameObject previewGameObject = null;
         protected Bounds previewBounds = default;
@@ -90,7 +90,7 @@ namespace SLZ.MarrowEditor
                     ClearCachedTexture();
                 }
 
-                if (crate.Barcode != previewTarget)
+                if (crate.Barcode != previewTargetBarcode)
                 {
                     ClearCachedAssets();
                 }
@@ -196,7 +196,7 @@ namespace SLZ.MarrowEditor
                 fullVerts = -1;
             }
 
-            previewTarget = crate.Barcode;
+            previewTargetBarcode = crate.Barcode;
             previewRender.lights[0].transform.localEulerAngles = new Vector3(30, 30, 0);
             previewRender.lights[0].intensity = 2;
             previewRender.ambientColor = new Color(.1f, .1f, .1f, 0);
@@ -223,30 +223,33 @@ namespace SLZ.MarrowEditor
             else if (gameObjectCrate.PreviewMesh != null)
             {
                 QueueEditorUpdateLoop.StartEditorUpdateLoop();
-                gameObjectCrate.PreviewMesh.LoadAsset(loadedMesh =>
+                if (!string.IsNullOrEmpty(gameObjectCrate.PreviewMesh.AssetGUID))
                 {
-                    if (previewRender != null && loadedMesh != null)
+                    gameObjectCrate.PreviewMesh.LoadAsset(loadedMesh =>
                     {
-                        previewMesh = loadedMesh;
-                        previewBounds = loadedMesh.bounds;
-                        if (previewMesh.isReadable)
+                        if (previewRender != null && loadedMesh != null)
                         {
-                            previewMeshTriangles = previewMesh.triangles.Length;
-                            previewMeshVerts = previewMesh.vertexCount;
+                            previewMesh = loadedMesh;
+                            previewBounds = loadedMesh.bounds;
+                            if (previewMesh.isReadable)
+                            {
+                                previewMeshTriangles = previewMesh.triangles.Length;
+                                previewMeshVerts = previewMesh.vertexCount;
+                            }
+
+                            float halfSize = Mathf.Max(previewBounds.extents.magnitude, 0.0001f);
+                            float distance = halfSize * 3.8f;
+                            var camera = previewRender.camera;
+                            camera.nearClipPlane = 0.001f;
+                            camera.farClipPlane = 1000;
+                            camera.fieldOfView = 30f;
+                            SetupPreviewRenderMainMesh(previewMesh);
+                            ClearCachedTexture();
                         }
 
-                        float halfSize = Mathf.Max(previewBounds.extents.magnitude, 0.0001f);
-                        float distance = halfSize * 3.8f;
-                        var camera = previewRender.camera;
-                        camera.nearClipPlane = 0.001f;
-                        camera.farClipPlane = 1000;
-                        camera.fieldOfView = 30f;
-                        SetupPreviewRenderMainMesh(previewMesh);
-                        ClearCachedTexture();
-                    }
-
-                    QueueEditorUpdateLoop.StopEditorUpdateLoop();
-                });
+                        QueueEditorUpdateLoop.StopEditorUpdateLoop();
+                    });
+                }
             }
         }
 

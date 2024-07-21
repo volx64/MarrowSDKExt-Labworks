@@ -151,7 +151,7 @@ namespace SLZ.MarrowEditor
             return result;
         }
 
-        private static void ClearTempDirectory()
+        public static void ClearTempDirectory()
         {
             var tempFullPath = Path.Combine("Temp", "com.unity.addressables", TempDirectory);
             DirectoryInfo di = new DirectoryInfo(tempFullPath);

@@ -86,6 +86,17 @@ namespace SLZ.MarrowEditor
             }
         }
 
+        private static System.Reflection.FieldInfo _groupGuidField;
+        public static FieldInfo GroupGuidField
+        {
+            get
+            {
+                if (_groupGuidField == null)
+                    _groupGuidField = typeof(AddressableAssetGroup).GetField("m_GUID", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                return _groupGuidField;
+            }
+        }
+
         public static void ApplyPresetAASettings()
         {
             var settings = Settings;
@@ -145,7 +156,7 @@ namespace SLZ.MarrowEditor
             string loadPath = EvaluateProfileValueLoadPathForPallet(pallet, profilePath);
             FixDefaultGroup(buildPath, loadPath);
             AddressablesRuntimeProperties.ClearCachedPropertyValues();
-            var contentName = !string.IsNullOrEmpty(customContentName) ? customContentName : pallet.Barcode;
+            var contentName = !string.IsNullOrEmpty(customContentName) ? customContentName : pallet.Barcode.ID;
             if (settings.OverridePlayerVersion != contentName)
             {
                 settings.OverridePlayerVersion = contentName;
@@ -195,7 +206,13 @@ namespace SLZ.MarrowEditor
             }
 
             if (setupPalletGroup && !settings.FindGroup("Pallets"))
-                settings.CreateGroup("Pallets", false, false, true, AddressablesManager.PalletsGroupTemplate.SchemaObjects);
+            {
+                var palletsGroup = settings.CreateGroup("Pallets", false, false, false, AddressablesManager.PalletsGroupTemplate.SchemaObjects);
+                string palletsGUID = AssetDatabase.GUIDFromAssetPath(AssetDatabase.GetAssetPath(palletsGroup)).ToString();
+                GroupGuidField.SetValue(palletsGroup, palletsGUID);
+                palletsGroup.SetDirty(AddressableAssetSettings.ModificationEvent.GroupAdded, palletsGroup, true, true);
+            }
+
             AssetDatabase.SaveAssetIfDirty(settings);
             return settings;
         }
@@ -321,7 +338,7 @@ namespace SLZ.MarrowEditor
         {
             if (profileValue.Contains("~PALLETBARCODE~") && pallet != null)
             {
-                profileValue = profileValue.Replace("~PALLETBARCODE~", pallet.Barcode);
+                profileValue = profileValue.Replace("~PALLETBARCODE~", pallet.Barcode.ID);
             }
 
             return profileValue;

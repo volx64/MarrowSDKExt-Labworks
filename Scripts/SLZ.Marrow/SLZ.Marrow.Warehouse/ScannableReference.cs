@@ -12,11 +12,27 @@ namespace SLZ.Marrow.Warehouse
     {
         [SerializeField]
         protected Barcode _barcode = Barcode.EmptyBarcode();
-        public Barcode Barcode { get => _barcode; set => _barcode = value; }
+        public Barcode Barcode
+        {
+            get => _barcode;
+            set
+            {
+                _barcode = value;
+#if UNITY_EDITOR
+                _barcode = new Barcode(value);
+#endif
+            }
+        }
+
         public virtual Type ScannableType { get => typeof(Scannable); }
 
         public ScannableReference()
         {
+        }
+
+        public ScannableReference(Barcode barcode)
+        {
+            this.Barcode = barcode;
         }
 
         public ScannableReference(string barcode)
@@ -67,6 +83,10 @@ namespace SLZ.Marrow.Warehouse
         public override Type ScannableType { get => typeof(T); }
 
         public ScannableReference() : base()
+        {
+        }
+
+        public ScannableReference(Barcode barcode) : base(barcode)
         {
         }
 

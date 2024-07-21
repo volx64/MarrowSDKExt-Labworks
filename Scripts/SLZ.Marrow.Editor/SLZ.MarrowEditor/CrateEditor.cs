@@ -132,7 +132,7 @@ namespace SLZ.MarrowEditor
             {
                 for (var t = 0; t < script.Tags.Count; t++)
                 {
-                    if (script.Tags[t].ToLower().ToString() == "null.empty.barcode")
+                    if (script.Tags[t].ToLower().ToString() == Barcode.EMPTY)
                     {
                         tagIsNull = true;
                     }
@@ -140,7 +140,7 @@ namespace SLZ.MarrowEditor
                     if (String.IsNullOrEmpty(script.Tags[t]))
                     {
                         tagIsNull = true;
-                        script.Tags[t] = "null.empty.barcode";
+                        script.Tags[t] = Barcode.EMPTY;
                     }
                 }
             }
@@ -155,15 +155,15 @@ namespace SLZ.MarrowEditor
             {
                 for (var bt = 0; bt < script.BoneTags.Tags.Count; bt++)
                 {
-                    if (script.BoneTags.Tags[bt] != null && script.BoneTags.Tags[bt].Barcode != null && script.BoneTags.Tags[bt].Barcode.ToString().ToLower() == "null.empty.barcode")
+                    var boneTag = script.BoneTags.Tags[bt];
+                    if (script.BoneTags.Tags[bt] != null && !Barcode.IsValid(boneTag.Barcode) && boneTag.Barcode != null && boneTag.Barcode.ID == Barcode.EMPTY)
                     {
                         bonetagIsNull = true;
                     }
-
-                    if (script.BoneTags.Tags[bt] != null && script.BoneTags.Tags[bt].Barcode != null && String.IsNullOrEmpty(script.BoneTags.Tags[bt].Barcode))
+                    else if (script.BoneTags.Tags[bt] != null && !Barcode.IsValid(boneTag.Barcode))
                     {
                         bonetagIsNull = true;
-                        script.BoneTags.Tags[bt].Barcode = (Barcode)"null.empty.barcode";
+                        script.BoneTags.Tags[bt].Barcode = Barcode.EmptyBarcode();
                     }
                 }
             }

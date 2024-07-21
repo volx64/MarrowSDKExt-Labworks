@@ -4,6 +4,31 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.0]
+
+### Added
+
+- ImpactProperties & SurfaceDataCard: Adds physical properties to the environment
+- ZoneAggro: ZoneLinkItem that alerts enemies of the player
+- SpawnForce: Adds initial force to a spawnable, let those crablets fly!
+- SurfaceDataPainter: Tooling to help visualize and apply SurfaceDataCards to ImpactProperties
+- Experimental Level Utilities window, use this to automatically create Reflection/Light Probes and Volumetrics
+
+### Changed
+
+- Better Pallet Inspector, easier to access Create Crate and Create DataCard buttons
+
+### Fixed
+
+- Fixed skybox rendering black
+- Fixed the Project Layers to use the correct Marrow Layers
+- Fixed CrateSpawner Title not changing properly
+
+### Known Issues
+
+- Custom Spawnables unsupported
+
+
 ## [0.6.0]
 
 ### Added
@@ -45,6 +70,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Platform now restores after you do a build for a different platform
 
 ### Known Issues
+
 - Skybox will render as black
 - Layers may appear to be missing (The layers will still work properly, needs to be added to Marrow Project Validation)
 - Custom Spawnables unsupported

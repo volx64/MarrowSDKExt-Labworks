@@ -140,17 +140,17 @@ namespace SLZ.Marrow.Warehouse
                         AssetDatabase.CreateFolder(MarrowSDK.GetMarrowAssetsPath(), "PackedAssets");
                     }
 
-                    if (!AssetDatabase.IsValidFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode)))
+                    if (!AssetDatabase.IsValidFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode.ToString())))
                     {
-                        AssetDatabase.CreateFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets"), Pallet.Barcode);
+                        AssetDatabase.CreateFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets"), Pallet.Barcode.ToString());
                     }
 
-                    if (!AssetDatabase.IsValidFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode, "PreviewMesh")))
+                    if (!AssetDatabase.IsValidFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode.ToString(), "PreviewMesh")))
                     {
-                        AssetDatabase.CreateFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode), "PreviewMesh");
+                        AssetDatabase.CreateFolder(MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode.ToString()), "PreviewMesh");
                     }
 
-                    string path = MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode, "PreviewMesh", $"{MarrowSDK.SanitizeName(Title)} PreviewMesh.mesh");
+                    string path = MarrowSDK.GetMarrowAssetsPath("PackedAssets", Pallet.Barcode.ToString(), "PreviewMesh", $"{MarrowSDK.SanitizeName(Title)} PreviewMesh.mesh");
                     if (System.IO.File.Exists(path))
                         AssetDatabase.DeleteAsset(path);
                     AssetDatabase.Refresh();

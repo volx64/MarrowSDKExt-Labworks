@@ -26,13 +26,13 @@ namespace SLZ.MarrowEditor
         void OnWizardCreate()
         {
             Pallet pallet = Pallet.CreatePallet(palletTitle, palletAuthor);
-            if (!Directory.Exists(MarrowSDK.GetMarrowAssetsPath(palletFolderName, pallet.Barcode)))
+            if (!Directory.Exists(MarrowSDK.GetMarrowAssetsPath(palletFolderName, pallet.Barcode.ID)))
             {
-                Directory.CreateDirectory(MarrowSDK.GetMarrowAssetsPath(palletFolderName, pallet.Barcode));
+                Directory.CreateDirectory(MarrowSDK.GetMarrowAssetsPath(palletFolderName, pallet.Barcode.ID));
             }
 
             string palletAssetFileName = pallet.GetAssetFilename();
-            string crateAssetPath = MarrowSDK.GetMarrowAssetsPath(palletFolderName, pallet.Barcode, palletAssetFileName);
+            string crateAssetPath = MarrowSDK.GetMarrowAssetsPath(palletFolderName, pallet.Barcode.ID, palletAssetFileName);
             AssetDatabase.CreateAsset(pallet, crateAssetPath);
             EditorUtility.SetDirty(pallet);
             AssetDatabase.SaveAssets();

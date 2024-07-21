@@ -68,7 +68,7 @@ namespace SLZ.Marrow.Warehouse
                             var relativePath = Path.GetRelativePath(SLZ.Marrow.MarrowSDK.RuntimeModsPath, newLocation);
                             string palletBarcode = relativePath.Split('/')[0];
                             relativePath = string.Join('/', relativePath.Split('/').Skip(1));
-                            if (AssetWarehouse.Instance.TryGetPalletManifest(palletBarcode, out var palletManifest))
+                            if (AssetWarehouse.Instance.TryGetPalletManifest(new Barcode(palletBarcode), out var palletManifest))
                             {
                                 var newRoot = Path.GetDirectoryName(palletManifest.CatalogPath);
                                 newLocation = $"{newRoot}/{relativePath}";
@@ -83,7 +83,7 @@ namespace SLZ.Marrow.Warehouse
                             var relativePath = arrSplit[2];
                             relativePath = relativePath.Substring(1, relativePath.Length - 1);
                             Log($"Pallet[{palletBarcode}] Path: \"{newLocation}\" \"{location.InternalId}\"");
-                            if (AssetWarehouse.Instance.TryGetPalletManifest(palletBarcode, out var palletManifest))
+                            if (AssetWarehouse.Instance.TryGetPalletManifest(new Barcode(palletBarcode), out var palletManifest))
                             {
                                 newLocation = $"{Path.GetDirectoryName(palletManifest.CatalogPath)}/{relativePath}";
                             }

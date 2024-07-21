@@ -130,7 +130,6 @@ namespace SLZ.Marrow.Warehouse
                 if (generateBarcode)
                 {
                     dataCard.GenerateBarcode();
-                    dataCard.SlimCode.GenerateGuid();
                 }
             }
 

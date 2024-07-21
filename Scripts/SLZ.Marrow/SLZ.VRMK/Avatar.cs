@@ -5,6 +5,7 @@ using UnityEngine;
 using SLZ.Data;
 using System;
 using System.Linq;
+using SLZ.Marrow.Warehouse;
 
  
 
@@ -698,6 +699,7 @@ namespace SLZ.VRMK
         public AudioVarianceData dying;
         public AudioVarianceData dead;
         public AudioVarianceData recovery;
+        public DataCardReference<SurfaceDataCard> surfaceDataCard;
         protected Vector3 _t7Local;
         protected Vector3 _l1Local;
         protected Vector3 _l3Local;

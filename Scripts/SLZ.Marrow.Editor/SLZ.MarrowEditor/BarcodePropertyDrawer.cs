@@ -2,8 +2,9 @@
  
 using UnityEngine;
 using UnityEditor;
- 
 using SLZ.Marrow.Warehouse;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace SLZ.MarrowEditor
 {
@@ -28,7 +29,7 @@ namespace SLZ.MarrowEditor
             warningPos.width -= indentSize;
             warningPos.y += barcodePost.height;
             warningPos.height = EditorGUIUtility.singleLineHeight;
-            if (!ValidateBarcodeSize(property.FindPropertyRelative("_id").stringValue))
+            if (!Barcode.IsValidSize(property.FindPropertyRelative("_id").stringValue))
             {
                 SetupErrorIcon();
                 errorIcon.text = errorText + " " + property.FindPropertyRelative("_id").stringValue.Length + "/" + Barcode.MAX_SIZE;
@@ -53,7 +54,7 @@ namespace SLZ.MarrowEditor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (ValidateBarcodeSize(property.FindPropertyRelative("_id").stringValue))
+            if (Barcode.IsValidSize(property.FindPropertyRelative("_id").stringValue))
             {
                 return GetBarcodeHeight(property);
             }
@@ -62,11 +63,6 @@ namespace SLZ.MarrowEditor
                 SetupErrorIcon();
                 return GetBarcodeHeight(property) + EditorGUIUtility.singleLineHeight;
             }
-        }
-
-        public bool ValidateBarcodeSize(string barcode)
-        {
-            return Barcode.IsValidSize(barcode);
         }
 
         private void SetupErrorIcon()
@@ -79,6 +75,16 @@ namespace SLZ.MarrowEditor
                 errorIcon.text = errorText;
                 errorIcon.tooltip = errorIconUnity.tooltip;
             }
+        }
+    }
+
+    public class BarcodeElement : VisualElement
+    {
+        public BarcodeElement(SerializedProperty serializedProperty)
+        {
+            var propertyField = new PropertyField(serializedProperty);
+            propertyField.style.alignSelf = Align.Center;
+            Add(propertyField);
         }
     }
 }

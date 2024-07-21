@@ -13,6 +13,7 @@ namespace SLZ.Marrow.Utilities
 {
     public class EditorMeshGizmo : MonoBehaviour
     {
+        protected static bool hideInInspector = true;
         public readonly static string EditorMeshGizmoName = "Editor Mesh Gizmo";
         [SerializeField]
         private string id;
@@ -29,12 +30,12 @@ namespace SLZ.Marrow.Utilities
 
             set
             {
-                if (_editorMesh != value)
+                if (_editorMesh != value || _meshFilter.sharedMesh != value)
                 {
                     _editorMesh = value;
-                    if (meshFilter != null)
+                    if (_meshFilter != null)
                     {
-                        meshFilter.sharedMesh = _editorMesh;
+                        _meshFilter.sharedMesh = _editorMesh;
                     }
                 }
             }
@@ -51,14 +52,24 @@ namespace SLZ.Marrow.Utilities
 
             set
             {
-                if (editorMaterial != value)
+                if (editorMaterial != value || _meshRenderer.sharedMaterial != value)
                 {
                     editorMaterial = value;
-                    if (meshRenderer != null)
+                    if (_meshRenderer != null)
                     {
-                        meshRenderer.sharedMaterial = editorMaterial;
+                        _meshRenderer.sharedMaterial = editorMaterial;
                     }
                 }
+            }
+        }
+
+        public bool Visible
+        {
+            get => MeshRenderer.enabled;
+            set
+            {
+                if (MeshRenderer.enabled != value)
+                    MeshRenderer.enabled = value;
             }
         }
 
@@ -82,11 +93,16 @@ namespace SLZ.Marrow.Utilities
         }
 
         [SerializeField]
-        private MeshRenderer meshRenderer;
+        private MeshRenderer _meshRenderer;
+        protected MeshRenderer MeshRenderer { get => _meshRenderer; }
+
         [SerializeField]
-        private MeshFilter meshFilter;
-        private static readonly Dictionary<(string, GameObject), EditorMeshGizmo> meshGizmoCache = new Dictionary<(string, GameObject), EditorMeshGizmo>();
+        private MeshFilter _meshFilter;
+        protected MeshFilter MeshFilter { get => _meshFilter; }
+
         Color boundColor = new Color(0f, 0.86f, 0.91f);
+        private static readonly Dictionary<(string, GameObject), EditorMeshGizmo> meshGizmoCache = new Dictionary<(string, GameObject), EditorMeshGizmo>();
+        private static int ignoreRaycastLayer = -1;
         public void DrawBounds()
         {
             if (EditorBounds.HasValue || EditorBounds.Value != default)
@@ -98,6 +114,49 @@ namespace SLZ.Marrow.Utilities
                 Gizmos.color = boundColor;
                 Gizmos.matrix = Matrix4x4.TRS(position + rotation * bounds.center, rotation, Vector3.one);
                 Gizmos.DrawWireCube(Vector3.zero, bounds.size);
+            }
+        }
+
+        public void ShowGizmo()
+        {
+            if (_meshRenderer.forceRenderingOff)
+                _meshRenderer.forceRenderingOff = false;
+        }
+
+        public bool ShowGizmo(bool show)
+        {
+            if (_meshRenderer.forceRenderingOff != !show)
+                _meshRenderer.forceRenderingOff = !show;
+            return !_meshRenderer.forceRenderingOff;
+        }
+
+        public void HideGizmo()
+        {
+            if (!_meshRenderer.forceRenderingOff)
+                _meshRenderer.forceRenderingOff = true;
+        }
+
+        public void DestroyGizmo(bool destroyGameObject = false, bool destroyOnlyGizmo = false)
+        {
+            if (!destroyOnlyGizmo)
+            {
+                if (_meshFilter != null)
+                    DestroyImmediate(_meshFilter);
+                if (_meshRenderer != null)
+                    DestroyImmediate(_meshRenderer);
+            }
+
+            DestroyImmediate(this);
+            if (destroyGameObject)
+                DestroyImmediate(this.gameObject);
+        }
+
+        public static void DestroyGizmoStatic(string id, GameObject targetGameObject, bool destroyGameObject = false, bool destroyOnlyGizmo = false)
+        {
+            if (meshGizmoCache.TryGetValue((id, targetGameObject), out var meshGizmo))
+            {
+                meshGizmo.DestroyGizmo(destroyGameObject: destroyGameObject, destroyOnlyGizmo: destroyOnlyGizmo);
+                meshGizmoCache.Remove((id, targetGameObject));
             }
         }
 
@@ -153,25 +212,36 @@ namespace SLZ.Marrow.Utilities
             return editorMeshGizmo;
         }
 
-        private static EditorGizmoT SetupGizmo<EditorGizmoT>(string id, GameObject targetGameObject, Mesh mesh = null, Material material = null, Bounds bounds = default, bool showInPlayMode = false)
+        public static EditorGizmoT SetupGizmo<EditorGizmoT>(string id, GameObject targetGameObject, Mesh mesh = null, Material material = null, Bounds bounds = default, bool showInPlayMode = false)
             where EditorGizmoT : EditorMeshGizmo
         {
             GameObjectUtility.SetStaticEditorFlags(targetGameObject, 0);
             EditorGizmoT editorMeshGizmo = targetGameObject.AddComponent<EditorGizmoT>();
             editorMeshGizmo.ID = id;
-            editorMeshGizmo.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.HideInInspector;
-            targetGameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+            if (hideInInspector)
+                editorMeshGizmo.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.HideInInspector;
+            else
+                editorMeshGizmo.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+            if (ignoreRaycastLayer == -1)
+                ignoreRaycastLayer = LayerMask.NameToLayer("Ignore Raycast");
+            targetGameObject.layer = ignoreRaycastLayer;
             editorMeshGizmo.ShowInPlaymode = showInPlayMode;
             var meshFilter = targetGameObject.GetComponent<MeshFilter>();
-            editorMeshGizmo.meshFilter = meshFilter != null ? meshFilter : targetGameObject.AddComponent<MeshFilter>();
-            editorMeshGizmo.meshFilter.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.HideInInspector;
+            editorMeshGizmo._meshFilter = meshFilter != null ? meshFilter : targetGameObject.AddComponent<MeshFilter>();
+            if (hideInInspector)
+                editorMeshGizmo._meshFilter.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.HideInInspector;
+            else
+                editorMeshGizmo._meshFilter.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
             var meshRenderer = targetGameObject.GetComponent<MeshRenderer>();
-            editorMeshGizmo.meshRenderer = meshRenderer != null ? meshRenderer : targetGameObject.AddComponent<MeshRenderer>();
-            editorMeshGizmo.meshRenderer.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.HideInInspector;
-            editorMeshGizmo.meshRenderer.receiveGI = 0;
-            editorMeshGizmo.meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
-            editorMeshGizmo.meshRenderer.lightProbeUsage = LightProbeUsage.Off;
-            editorMeshGizmo.meshRenderer.allowOcclusionWhenDynamic = false;
+            editorMeshGizmo._meshRenderer = meshRenderer != null ? meshRenderer : targetGameObject.AddComponent<MeshRenderer>();
+            if (hideInInspector)
+                editorMeshGizmo._meshRenderer.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild | HideFlags.HideInInspector;
+            else
+                editorMeshGizmo._meshRenderer.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+            editorMeshGizmo._meshRenderer.receiveGI = 0;
+            editorMeshGizmo._meshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+            editorMeshGizmo._meshRenderer.lightProbeUsage = LightProbeUsage.Off;
+            editorMeshGizmo._meshRenderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
             if (mesh != null)
             {
                 editorMeshGizmo.EditorMesh = mesh;

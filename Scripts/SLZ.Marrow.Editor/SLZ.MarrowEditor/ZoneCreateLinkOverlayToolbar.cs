@@ -17,6 +17,8 @@ using UnityEditor.SceneManagement;
  
 using SLZ.Marrow.Utilities;
 using SLZ.Marrow;
+using System.Threading.Tasks;
+using SLZ.Marrow.Interaction;
 
 namespace SLZ.MarrowEditor
 {
@@ -518,28 +520,26 @@ namespace SLZ.MarrowEditor
                     }
                 }
             });
-            TextField sceneChunkScenePathField = rootVisualElement.Q<TextField>("sceneChunkScenePathField");
-            string readonlyTextFieldPath = "Path unknown, save at least one scene...";
-            sceneChunkScenePathField.RegisterValueChangedCallback(evt =>
+            ObjectField sceneChunkLevelCrateField = rootVisualElement.Q<ObjectField>("sceneChunkLevelCrateField");
+            SceneAsset activeSceneAsset = AssetDatabase.LoadAssetAtPath<SceneAsset>(EditorSceneManager.GetActiveScene().path);
+            if (activeSceneAsset != null)
             {
-                sceneChunkScenePathField.value = readonlyTextFieldPath;
-            });
-            if (EditorSceneManager.GetSceneAt(0) != null && EditorSceneManager.GetSceneAt(0).path != null && EditorSceneManager.GetSceneAt(0).path != "")
-            {
-                readonlyTextFieldPath = EditorSceneManager.GetSceneAt(0).path.Substring(0, EditorSceneManager.GetSceneAt(0).path.LastIndexOf('/'));
-                sceneChunkScenePathField.value = readonlyTextFieldPath;
+                AssetWarehouse.OnReady(() =>
+                {
+                    if (AssetWarehouse.Instance.EditorObjectCrateLookup.TryGetValue(activeSceneAsset, out Crate crate) && crate is LevelCrate levelCrate)
+                    {
+                        if (levelCrate != null)
+                        {
+                            sceneChunkLevelCrateField.value = levelCrate;
+                        }
+                    }
+                });
             }
 
-            Button sceneChunkFilePathButton = rootVisualElement.Q<Button>("sceneChunkFilePathButton");
-            sceneChunkFilePathButton.clickable.clicked += () =>
-            {
-                readonlyTextFieldPath = SceneChunkFilePathOnClick().Replace(Application.dataPath.ToString(), "Assets");
-                sceneChunkScenePathField.value = readonlyTextFieldPath;
-            };
             Button createSceneChunkFromSelectedButton = rootVisualElement.Q<Button>("createSceneChunkFromSelectedButton");
             createSceneChunkFromSelectedButton.clickable.clicked += () =>
             {
-                CreateSceneFromSelectedGOsOnClick(sceneChunkSceneNameField.value, sceneChunkScenePathField.value);
+                CreateSceneFromSelectedGOsOnClick(sceneChunkSceneNameField.value, sceneChunkLevelCrateField);
             };
             Toggle showZonePickableCubeToggle = rootVisualElement.Q<Toggle>("showZonePickableCubeToggle");
             showZonePickableCubeToggle.RegisterValueChangedCallback((evt) =>
@@ -1365,7 +1365,8 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
@@ -1472,7 +1473,8 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
@@ -1579,7 +1581,8 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
@@ -1683,11 +1686,19 @@ namespace SLZ.MarrowEditor
                 ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                 zoneLink.activatorTags.Tags.Add(playerTagQuery);
                 cloneGO.AddComponent<ZoneCuller>();
-                cloneGO.layer = 29;
+                cloneGO.AddComponent<ZoneAggro>();
+                cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                 if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                 {
                     cloneGO.AddComponent<ZoneChunkLoader>();
                 }
+
+                GameObject zoneAmbienceGO = new GameObject();
+                zoneAmbienceGO.name = cloneGO.name + " ZoneAmbience";
+                ZoneAmbience zoneAmbience = zoneAmbienceGO.AddComponent<ZoneAmbience>();
+                zoneAmbienceGO.transform.position = cloneGO.transform.position;
+                zoneAmbienceGO.transform.parent = cloneGO.transform;
+                SetZoneAmbienceZoneLink(zoneAmbience, zoneLink);
             }
 
             UnityEngine.Object.DestroyImmediate(tempParentGO);
@@ -1741,11 +1752,19 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
                     }
+
+                    GameObject zoneAmbienceGO = new GameObject();
+                    zoneAmbienceGO.name = cloneGO.name + " ZoneAmbience";
+                    ZoneAmbience zoneAmbience = zoneAmbienceGO.AddComponent<ZoneAmbience>();
+                    zoneAmbienceGO.transform.position = cloneGO.transform.position;
+                    zoneAmbienceGO.transform.parent = cloneGO.transform;
+                    SetZoneAmbienceZoneLink(zoneAmbience, zoneLink);
                 }
 
                 if (!createdZones.Contains(cloneGO))
@@ -1858,11 +1877,19 @@ namespace SLZ.MarrowEditor
                         ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                         zoneLink.activatorTags.Tags.Add(playerTagQuery);
                         cloneGO.AddComponent<ZoneCuller>();
-                        cloneGO.layer = 29;
+                        cloneGO.AddComponent<ZoneAggro>();
+                        cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                         if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                         {
                             cloneGO.AddComponent<ZoneChunkLoader>();
                         }
+
+                        GameObject zoneAmbienceGO = new GameObject();
+                        zoneAmbienceGO.name = cloneGO.name + " ZoneAmbience";
+                        ZoneAmbience zoneAmbience = zoneAmbienceGO.AddComponent<ZoneAmbience>();
+                        zoneAmbienceGO.transform.position = cloneGO.transform.position;
+                        zoneAmbienceGO.transform.parent = cloneGO.transform;
+                        SetZoneAmbienceZoneLink(zoneAmbience, zoneLink);
                     }
 
                     if (hasConvexMeshTrigger)
@@ -1888,7 +1915,101 @@ namespace SLZ.MarrowEditor
             Selection.objects = createdZones.ToArray();
         }
 
-        [MenuItem("GameObject/MarrowSDK/Default Zone", priority = 4)]
+        [MenuItem("GameObject/MarrowSDK/Zone", priority = 4)]
+        private static void CreateOnlyZoneMenu(MenuCommand menuCommand)
+        {
+            GameObject zonesHolderParent = GameObject.Find(MarrowSDKPreferences.zonesParentHolderName);
+            List<GameObject> selectedGOs = Selection.gameObjects.ToList();
+            List<GameObject> createdZones = new List<GameObject>();
+            foreach (GameObject go in selectedGOs)
+            {
+                GameObject cloneGO = new GameObject();
+                cloneGO.transform.position = go.transform.position;
+                cloneGO.transform.rotation = Quaternion.identity;
+                cloneGO.name = "ZONE of " + go.name;
+                if (zonesHolderParent)
+                {
+                    cloneGO.transform.parent = zonesHolderParent.transform;
+                }
+
+                if (!cloneGO.GetComponent<Zone>())
+                {
+                    if (!cloneGO.GetComponent<BoxCollider>())
+                    {
+                        BoxCollider boxCol = cloneGO.AddComponent<BoxCollider>();
+                        boxCol.size -= zoneBoundsInsetMenu;
+                        boxCol.isTrigger = true;
+                    }
+
+                    cloneGO.AddComponent<Zone>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
+                }
+
+                if (!createdZones.Contains(cloneGO))
+                {
+                    createdZones.Add(cloneGO);
+                }
+
+                Undo.RegisterCreatedObjectUndo(cloneGO, "Zone Created");
+            }
+
+            if (selectedGOs == null || selectedGOs.Count == 0)
+            {
+                GameObject cloneGO = new GameObject();
+                cloneGO.transform.position = Vector3.zero;
+                cloneGO.transform.rotation = Quaternion.identity;
+                cloneGO.name = "ZONE Default";
+                if (zonesHolderParent)
+                {
+                    cloneGO.transform.parent = zonesHolderParent.transform;
+                }
+
+                if (!cloneGO.GetComponent<Zone>())
+                {
+                    if (!cloneGO.GetComponent<BoxCollider>())
+                    {
+                        BoxCollider boxCol = cloneGO.AddComponent<BoxCollider>();
+                        boxCol.size -= zoneBoundsInsetMenu;
+                        boxCol.isTrigger = true;
+                    }
+
+                    cloneGO.AddComponent<Zone>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
+                }
+
+                if (!createdZones.Contains(cloneGO))
+                {
+                    createdZones.Add(cloneGO);
+                }
+
+                Undo.RegisterCreatedObjectUndo(cloneGO, "Zone Created");
+                Debug.Log($"Zone created at origin with Inset {zoneBoundsInsetMenu}.");
+            }
+
+            Selection.objects = createdZones.ToArray();
+            bool overlayShown = false;
+            bool overlayCollapsed = false;
+            ZoneCreateLinkOverlayToolbar.DoWithInstances(instance => overlayShown = instance.displayed);
+            ZoneCreateLinkOverlayToolbar.DoWithInstances(instance => overlayCollapsed = instance.collapsed);
+            if (overlayShown == false)
+            {
+                if (UnityEngine.Object.FindObjectsOfType<Zone>().Length == 1)
+                {
+                    ZoneCreateLinkOverlayToolbar.DoWithInstances(instance => instance.displayed = true);
+                    ZoneCreateLinkOverlayToolbar.DoWithInstances(instance => instance.collapsed = false);
+                }
+            }
+
+            if (overlayCollapsed == true)
+            {
+                if (UnityEngine.Object.FindObjectsOfType<Zone>().Length == 1)
+                {
+                    ZoneCreateLinkOverlayToolbar.DoWithInstances(instance => instance.collapsed = false);
+                }
+            }
+        }
+
+        [MenuItem("GameObject/MarrowSDK/Zone Link", priority = 5)]
         private static void CreateDefaultZoneMenu(MenuCommand menuCommand)
         {
             GameObject zonesHolderParent = GameObject.Find(MarrowSDKPreferences.zonesParentHolderName);
@@ -1921,10 +2042,34 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
+                    }
+
+                    GameObject zoneAmbienceGO = new GameObject();
+                    zoneAmbienceGO.name = cloneGO.name + " ZoneAmbience";
+                    ZoneAmbience zoneAmbience = zoneAmbienceGO.AddComponent<ZoneAmbience>();
+                    zoneAmbienceGO.transform.position = cloneGO.transform.position;
+                    zoneAmbienceGO.transform.parent = cloneGO.transform;
+                    Type type = zoneAmbience.GetType();
+                    FieldInfo fieldInfo = null;
+                    while (fieldInfo == null && type != null)
+                    {
+                        fieldInfo = type.GetField("_zoneLink", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                        type = type.BaseType;
+                    }
+
+                    if (fieldInfo == null)
+                    {
+                        throw new ArgumentOutOfRangeException("propName", "Field _zoneLink was not found in Type " + zoneAmbience.GetType().FullName);
+                    }
+
+                    if (zoneLink != null)
+                    {
+                        fieldInfo.SetValue(zoneAmbience, zoneLink);
                     }
                 }
 
@@ -1933,7 +2078,7 @@ namespace SLZ.MarrowEditor
                     createdZones.Add(cloneGO);
                 }
 
-                Undo.RegisterCreatedObjectUndo(cloneGO, "Default Zone Created");
+                Undo.RegisterCreatedObjectUndo(cloneGO, "Zone with Zone Link Created");
             }
 
             if (selectedGOs == null || selectedGOs.Count == 0)
@@ -1941,7 +2086,7 @@ namespace SLZ.MarrowEditor
                 GameObject cloneGO = new GameObject();
                 cloneGO.transform.position = Vector3.zero;
                 cloneGO.transform.rotation = Quaternion.identity;
-                cloneGO.name = "ZONE Default";
+                cloneGO.name = "ZONE Link";
                 if (zonesHolderParent)
                 {
                     cloneGO.transform.parent = zonesHolderParent.transform;
@@ -1960,10 +2105,34 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
+                    }
+
+                    GameObject zoneAmbienceGO = new GameObject();
+                    zoneAmbienceGO.name = cloneGO.name + " ZoneAmbience";
+                    ZoneAmbience zoneAmbience = zoneAmbienceGO.AddComponent<ZoneAmbience>();
+                    zoneAmbienceGO.transform.position = cloneGO.transform.position;
+                    zoneAmbienceGO.transform.parent = cloneGO.transform;
+                    Type type = zoneAmbience.GetType();
+                    FieldInfo fieldInfo = null;
+                    while (fieldInfo == null && type != null)
+                    {
+                        fieldInfo = type.GetField("_zoneLink", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                        type = type.BaseType;
+                    }
+
+                    if (fieldInfo == null)
+                    {
+                        throw new ArgumentOutOfRangeException("propName", "Field _zoneLink was not found in Type " + zoneAmbience.GetType().FullName);
+                    }
+
+                    if (zoneLink != null)
+                    {
+                        fieldInfo.SetValue(zoneAmbience, zoneLink);
                     }
                 }
 
@@ -1972,8 +2141,8 @@ namespace SLZ.MarrowEditor
                     createdZones.Add(cloneGO);
                 }
 
-                Undo.RegisterCreatedObjectUndo(cloneGO, "Default Zone Created");
-                Debug.Log($"Default Zone created at origin with Inset {zoneBoundsInsetMenu}.");
+                Undo.RegisterCreatedObjectUndo(cloneGO, "Zone with Link Created");
+                Debug.Log($"Zone with ZoneLink created at origin with Inset {zoneBoundsInsetMenu}.");
             }
 
             Selection.objects = createdZones.ToArray();
@@ -2033,11 +2202,19 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
                     }
+
+                    GameObject zoneAmbienceGO = new GameObject();
+                    zoneAmbienceGO.name = cloneGO.name + " ZoneAmbience";
+                    ZoneAmbience zoneAmbience = zoneAmbienceGO.AddComponent<ZoneAmbience>();
+                    zoneAmbienceGO.transform.position = cloneGO.transform.position;
+                    zoneAmbienceGO.transform.parent = cloneGO.transform;
+                    SetZoneAmbienceZoneLink(zoneAmbience, zoneLink);
                 }
 
                 if (!createdZones.Contains(cloneGO))
@@ -2045,7 +2222,7 @@ namespace SLZ.MarrowEditor
                     createdZones.Add(cloneGO);
                 }
 
-                Undo.RegisterCreatedObjectUndo(cloneGO, "Default Zone Created");
+                Undo.RegisterCreatedObjectUndo(cloneGO, "Zone with ZoneLink Created");
             }
 
             if (selectedGOs == null || selectedGOs.Count == 0)
@@ -2053,7 +2230,7 @@ namespace SLZ.MarrowEditor
                 GameObject cloneGO = new GameObject();
                 cloneGO.transform.position = Vector3.zero;
                 cloneGO.transform.rotation = Quaternion.identity;
-                cloneGO.name = "ZONE Default";
+                cloneGO.name = "ZONE Link";
                 if (zonesHolderParent)
                 {
                     cloneGO.transform.parent = zonesHolderParent.transform;
@@ -2072,11 +2249,19 @@ namespace SLZ.MarrowEditor
                     ZoneLink zoneLink = cloneGO.AddComponent<ZoneLink>();
                     zoneLink.activatorTags.Tags.Add(playerTagQuery);
                     cloneGO.AddComponent<ZoneCuller>();
-                    cloneGO.layer = 29;
+                    cloneGO.AddComponent<ZoneAggro>();
+                    cloneGO.layer = (int)MarrowLayers.EntityTrigger;
                     if (GameObject.FindObjectOfType(typeof(SceneChunk)) != null)
                     {
                         cloneGO.AddComponent<ZoneChunkLoader>();
                     }
+
+                    GameObject zoneAmbienceGO = new GameObject();
+                    zoneAmbienceGO.name = cloneGO.name + " ZoneAmbience";
+                    ZoneAmbience zoneAmbience = zoneAmbienceGO.AddComponent<ZoneAmbience>();
+                    zoneAmbienceGO.transform.position = cloneGO.transform.position;
+                    zoneAmbienceGO.transform.parent = cloneGO.transform;
+                    SetZoneAmbienceZoneLink(zoneAmbience, zoneLink);
                 }
 
                 if (!createdZones.Contains(cloneGO))
@@ -2084,8 +2269,8 @@ namespace SLZ.MarrowEditor
                     createdZones.Add(cloneGO);
                 }
 
-                Undo.RegisterCreatedObjectUndo(cloneGO, "Default Zone Created");
-                Debug.Log($"Default Zone created at origin with Inset {zoneBoundsInset}.");
+                Undo.RegisterCreatedObjectUndo(cloneGO, "Zone with ZoneLink Created");
+                Debug.Log($"Zone with ZoneLink created at origin with Inset {zoneBoundsInset}.");
             }
 
             Selection.objects = createdZones.ToArray();
@@ -2343,26 +2528,57 @@ namespace SLZ.MarrowEditor
 
         private void LinkSelectedZonesToEachOtherOnClick()
         {
-            GameObject[] zoneGOs = Selection.gameObjects.ToArray();
-            var zones = new List<ZoneLink>();
+            GameObject[] zoneGOs = Selection.gameObjects;
+            List<ZoneLink> selZoneLinks = new List<ZoneLink>();
             foreach (GameObject go in zoneGOs)
             {
-                zones.Add(go.GetComponent<ZoneLink>());
+                selZoneLinks.Add(go.GetComponent<ZoneLink>());
             }
 
-            foreach (var zone in zones)
+            Selection.objects = null;
+            foreach (var selZoneLink in selZoneLinks)
             {
-                var linkedZones = new List<ZoneLink>();
-                foreach (var refZone in zones)
+                var zoneLinksList = selZoneLink.zoneLinks.ToList();
+                foreach (var zoneLinkOfZLList in zoneLinksList)
                 {
-                    if (zone == refZone)
-                        continue;
-                    linkedZones.Add(refZone);
+                    var unselectedZoneLinkList = zoneLinkOfZLList.zoneLinks.ToList();
+                    if (unselectedZoneLinkList.Contains(selZoneLink))
+                    {
+                        unselectedZoneLinkList.Remove(selZoneLink);
+                    }
+
+                    EditorUtility.SetDirty(selZoneLink);
+                    zoneLinkOfZLList.zoneLinks = unselectedZoneLinkList.ToArray();
+                }
+            }
+
+            foreach (var selZoneLink in selZoneLinks)
+            {
+                Undo.RecordObject(selZoneLink, "Overwrite Selected ZoneLinks");
+                selZoneLink.zoneLinks = selZoneLinks.ToArray();
+            }
+
+            foreach (var selZoneLink in selZoneLinks)
+            {
+                var newZoneLinkList = selZoneLink.zoneLinks.ToList();
+                if (selZoneLink.zoneLinks.Contains(selZoneLink))
+                {
+                    newZoneLinkList.Remove(selZoneLink);
                 }
 
-                Undo.RecordObject(zone, "Update Zone ZoneLinks");
-                zone.zoneLinks = linkedZones.ToArray();
-                EditorUtility.SetDirty(zone);
+                selZoneLink.zoneLinks = newZoneLinkList.ToArray();
+            }
+
+            RemoveEmptyOrDupLinksOnClick();
+            DelayMultiSelectionAsync(zoneGOs);
+        }
+
+        async static void DelayMultiSelectionAsync(GameObject[] selObjects)
+        {
+            await Task.Delay(500);
+            if (selObjects != null)
+            {
+                Selection.objects = selObjects;
             }
         }
 
@@ -2418,7 +2634,7 @@ namespace SLZ.MarrowEditor
             }
         }
 
-        private void CreateSceneFromSelectedGOsOnClick(string sceneFilename, string scenePath)
+        private void CreateSceneFromSelectedGOsOnClick(string sceneFilename, ObjectField sceneChunkLevelCrateField)
         {
             bool sceneAlreadyExists = false;
             List<GameObject> selectedObjects = Selection.gameObjects.ToList();
@@ -2427,12 +2643,24 @@ namespace SLZ.MarrowEditor
                 if (EditorSceneManager.GetSceneAt(s).name == sceneFilename)
                 {
                     sceneAlreadyExists = true;
+                    Debug.Log("Chunk Scene creation aborted: Scene name already exists.");
                 }
             }
 
+            LevelCrate levelCrate = (LevelCrate)sceneChunkLevelCrateField.value;
+            string sceneFile = Path.GetFileName(AssetDatabase.GUIDToAssetPath(levelCrate.MainScene.AssetGUID));
+            if (sceneFile == null)
+                return;
+            string scenePath = AssetDatabase.GUIDToAssetPath(levelCrate.MainScene.AssetGUID).Replace(sceneFile, "");
             if (EditorSceneManager.GetSceneAt(0) != null && sceneAlreadyExists == false)
             {
                 char[] invalidPathChars = Path.GetInvalidPathChars();
+                if (string.IsNullOrEmpty(sceneFilename.Trim()))
+                {
+                    Debug.Log("Chunk Scene filename cannot be empty.");
+                    return;
+                }
+
                 if (sceneFilename.Trim().Length > 0)
                 {
                     foreach (char c in invalidPathChars)
@@ -2445,32 +2673,42 @@ namespace SLZ.MarrowEditor
 
                     var newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
                     newScene.name = sceneFilename;
-                    EditorSceneManager.SaveScene(newScene, scenePath + "/" + sceneFilename + ".unity");
-                    Debug.Log("Scene Saved at " + scenePath + "/" + sceneFilename + ".unity");
-                    List<GameObject> rootObjectsInSel = new List<GameObject>();
-                    for (int g = 0; g < selectedObjects.Count; g++)
+                    EditorSceneManager.SaveScene(newScene, scenePath + sceneFilename + ".unity");
+                    Debug.Log("Scene Saved at " + scenePath + sceneFilename + ".unity");
+                    if (EditorUtility.DisplayDialog("Move selected root GameObjects?", "Move the selected root GameObjects to the new Chunk Scene?  Any selected non-root GameObjects will be ignored.", "Move Selected Root GameObjects", "Do Not Move GameObjects"))
                     {
-                        GameObject selectedObj = selectedObjects[g];
-                        bool isChildOfSelected = false;
-                        foreach (GameObject checkSelectedObj in Selection.objects)
+                        List<GameObject> rootObjectsInSel = new List<GameObject>();
+                        for (int g = 0; g < selectedObjects.Count; g++)
                         {
-                            if (checkSelectedObj != selectedObj && selectedObj.transform.IsChildOf(checkSelectedObj.transform))
+                            GameObject selectedObj = selectedObjects[g];
+                            bool isChildOfSelected = false;
+                            foreach (GameObject checkSelectedObj in Selection.objects)
                             {
-                                isChildOfSelected = true;
+                                if (checkSelectedObj != selectedObj && selectedObj.transform.IsChildOf(checkSelectedObj.transform))
+                                {
+                                    isChildOfSelected = true;
+                                }
+                            }
+
+                            if (isChildOfSelected == false && !rootObjectsInSel.Contains(selectedObj))
+                            {
+                                if (selectedObj.transform.parent == null)
+                                {
+                                    rootObjectsInSel.Add(selectedObj);
+                                }
+                                else
+                                {
+                                    Debug.Log($"Skipping move of {selectedObj.name} to Chunk Scene {newScene.name} because it is not a root GameObject");
+                                }
                             }
                         }
 
-                        if (isChildOfSelected == false && !rootObjectsInSel.Contains(selectedObj))
+                        for (int r = 0; r < rootObjectsInSel.Count; r++)
                         {
-                            rootObjectsInSel.Add(selectedObj);
+                            Undo.RecordObject(rootObjectsInSel[r], "SceneChunk Move");
+                            Undo.RecordObject(rootObjectsInSel[r].transform, "SceneChunk Move Transform");
+                            EditorSceneManager.MoveGameObjectToScene(rootObjectsInSel[r], newScene);
                         }
-                    }
-
-                    for (int r = 0; r < rootObjectsInSel.Count; r++)
-                    {
-                        Undo.RecordObject(rootObjectsInSel[r], "SceneChunk Move");
-                        Undo.RecordObject(rootObjectsInSel[r].transform, "SceneChunk Move Transform");
-                        EditorSceneManager.MoveGameObjectToScene(rootObjectsInSel[r], newScene);
                     }
 
                     EditorSceneManager.SetActiveScene(EditorSceneManager.GetSceneAt(0));
@@ -2484,6 +2722,7 @@ namespace SLZ.MarrowEditor
                         }
 
                         GameObject newSceneChunkObj = new GameObject(newScene.name + " SceneChunk");
+                        Undo.RegisterCreatedObjectUndo(newSceneChunkObj, "SceneChunk " + newSceneChunkObj.name + " created");
                         SceneChunk newSceneChunk = newSceneChunkObj.AddComponent<SceneChunk>();
                         MarrowScene newMarrowScene = new MarrowScene(sceneGUID);
                         newSceneChunk.transform.parent = sceneChunkHolderParent.transform;
@@ -2496,6 +2735,21 @@ namespace SLZ.MarrowEditor
                             newSceneChunk.sceneLayers = newMarrowSceneList.ToArray();
                         }
 
+                        if (levelCrate.MultiScene != true)
+                        {
+                            Undo.RecordObject(levelCrate, "Level Crate set to MultiScene");
+                            levelCrate.MultiScene = true;
+                            EditorUtility.SetDirty(levelCrate);
+                        }
+
+                        if (!levelCrate.ChunkScenes.Contains(newMarrowScene))
+                        {
+                            Undo.RecordObject(levelCrate, "Level Crate added SceneLayer " + newMarrowScene.ToString());
+                            levelCrate.ChunkScenes.Add(newMarrowScene);
+                            EditorUtility.SetDirty(levelCrate);
+                        }
+
+                        AssetDatabase.SaveAssetIfDirty(levelCrate);
                         Selection.activeGameObject = newSceneChunkObj;
                         SceneChunk.showZoneCullerHandles = true;
                     }

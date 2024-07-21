@@ -83,7 +83,7 @@ namespace SLZ.MarrowEditor
                     switch (displayMode)
                     {
                         case DisplayMode.AUTO:
-                            if (assetExists || !Barcode.IsValid(assetReference.AssetGUID))
+                            if (assetExists || string.IsNullOrEmpty(assetReference.AssetGUID))
                                 DrawMarrowAssetReference(position, fullPosition, property);
                             else
                                 DrawGUID(position, fullPosition, guidProp);

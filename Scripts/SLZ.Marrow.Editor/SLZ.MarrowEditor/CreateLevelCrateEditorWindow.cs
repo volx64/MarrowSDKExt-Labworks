@@ -18,7 +18,20 @@ namespace SLZ.MarrowEditor
         public DropdownField createLevelSceneDropdown;
         public ObjectField customSceneObjectField;
         private bool validationPassed = true;
-        private Crate tempCrate;
+        private Crate _tempCrate;
+        private Crate TempCrate
+        {
+            get
+            {
+                if (_tempCrate == null)
+                {
+                    _tempCrate = Crate.CreateCrate(typeof(LevelCrate), pallet, levelTitle, null);
+                }
+
+                return _tempCrate;
+            }
+        }
+
         public static void ShowCreateLevelCrateWindowEditor()
         {
             string levelImagePath = MarrowSDK.GetPackagePath("Editor/Assets/Icons/Warehouse/crate-level16.png");
@@ -138,7 +151,10 @@ namespace SLZ.MarrowEditor
 
                 if (!string.IsNullOrEmpty(levelTitle) && pallet != null)
                 {
-                    if (AssetWarehouse.Instance.HasCrate(pallet.Barcode + ".Level." + MarrowSDK.SanitizeID(levelTitle)))
+                    TempCrate.Pallet = pallet;
+                    TempCrate.Title = levelTitle;
+                    TempCrate.GenerateBarcode(true);
+                    if (AssetWarehouse.Instance.HasCrate(TempCrate.Barcode))
                     {
                         if (!string.IsNullOrEmpty(errorString))
                             errorString += "\n";
@@ -172,19 +188,11 @@ namespace SLZ.MarrowEditor
         {
             if (pallet != null && !string.IsNullOrEmpty(levelTitle))
             {
-                if (tempCrate == null)
-                {
-                    tempCrate = Crate.CreateCrate(typeof(LevelCrate), pallet, levelTitle, null);
-                }
-                else
-                {
-                    tempCrate.Pallet = pallet;
-                    tempCrate.Title = levelTitle;
-                    tempCrate.GenerateBarcode(true);
-                }
-
-                barcode = new Barcode(tempCrate.Barcode);
-                barcodeField.value = barcode;
+                TempCrate.Pallet = pallet;
+                TempCrate.Title = levelTitle;
+                TempCrate.GenerateBarcode(true);
+                barcode = new Barcode(_tempCrate.Barcode);
+                barcodeField.value = barcode.ID;
             }
             else
             {

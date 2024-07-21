@@ -49,6 +49,46 @@ public static class ScannableQueryEngine
                 return dataCard.Title;
             return string.Empty;
         });
+        queryEngine.AddFilter<string>("t", (scannable, operatorVal, searchVal) =>
+        {
+            if (operatorVal != ":")
+                return false;
+            if (scannable is Crate crate)
+            {
+                if (crate.Tags != null && crate.Tags.Count > 0)
+                {
+                    foreach (var tag in crate.Tags)
+                    {
+                        if (tag.ToLower().ToString().Contains(searchVal.ToLower().ToString()))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        });
+        queryEngine.AddFilter<string>("bt", (scannable, operatorVal, searchVal) =>
+        {
+            if (operatorVal != ":")
+                return false;
+            if (scannable is Crate crate)
+            {
+                if (crate.BoneTags != null && crate.BoneTags.Tags != null && crate.BoneTags.Tags.Count > 0)
+                {
+                    foreach (var bonetag in crate.BoneTags.Tags)
+                    {
+                        if (bonetag.DataCard.Title.ToLower().ToString().Contains(searchVal.ToLower().ToString()))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        });
         queryEngine.AddFilter("b", scannable => scannable.Barcode.ToString());
         return queryEngine;
     }
