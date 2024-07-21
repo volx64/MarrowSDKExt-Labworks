@@ -292,10 +292,10 @@ namespace SLZ.Marrow
 		public BladeAudio bladeAudio;
 
 		[SerializeField]
-		private MarrowEntity _entity;
+		public MarrowEntity _entity;
 
 		[SerializeField]
-		private InteractableHost _host;
+		public InteractableHost _host;
 
 		private float _fixedDeltaTime;
 
