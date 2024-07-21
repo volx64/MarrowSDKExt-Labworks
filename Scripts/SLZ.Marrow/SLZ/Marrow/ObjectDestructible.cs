@@ -17,7 +17,7 @@ namespace SLZ.Marrow
 		private static ComponentCache<ObjectDestructible> _cache;
 
 		[SerializeField]
-		private Rigidbody _rb;
+		public Rigidbody _rb;
 
 		private LootTableData _defaultLootTable;
 
