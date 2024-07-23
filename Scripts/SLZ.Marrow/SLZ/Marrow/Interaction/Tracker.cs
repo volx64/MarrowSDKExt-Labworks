@@ -83,8 +83,8 @@ namespace SLZ.Marrow.Interaction
 			BoxCollider boxCollider = _collider as BoxCollider;
 			if (boxCollider != null)
 			{
-				boxCollider.center = bounds.center;
-				boxCollider.size = bounds.size;
+				boxCollider.center = Vector3.Scale(bounds.center, new Vector3(1/transform.parent.localScale.x, 1 / transform.parent.localScale.y, 1 / transform.parent.localScale.z));
+				boxCollider.size = Vector3.Scale(bounds.size, new Vector3(1 / transform.parent.localScale.x, 1 / transform.parent.localScale.y, 1 / transform.parent.localScale.z));
 			}
 #endif
 		}
