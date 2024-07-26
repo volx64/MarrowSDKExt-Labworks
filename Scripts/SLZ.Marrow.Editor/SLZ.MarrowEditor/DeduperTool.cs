@@ -174,14 +174,14 @@ namespace SLZ.MarrowEditor
 
                     Debug.Log("Deduper: Stripped " + strippers.Count + " Assets: \n" + strippedAssets);
                     if (strippers.Count > 0)
-                        Debug.Log("Deduper: Stripped Dedupe Group now has " + dedupeGroup.entries.Count + " assets");
+                        Debug.Log("Deduper: First Stripped Dedupe Group now has " + dedupeGroup.entries.Count + " assets");
                 }
 
                 List<AddressableAssetEntry> strippers2 = new List<AddressableAssetEntry>();
                 foreach (var entry in dedupeGroup.entries)
                 {
                     bool strip = false;
-                    if (entry.MainAsset.name.ToLower().StartsWith("litmas") || ((entry.MainAsset.name.ToLower().StartsWith("mas_m") || entry.MainAsset.name.ToLower().StartsWith("defaultdetail")) && entry.MainAssetType == typeof(Texture2D)))
+                    if (entry.AssetPath.ToLower().Contains("litmas") || ((entry.AssetPath.ToLower().Contains("mas_m") || entry.AssetPath.ToLower().Contains("defaultdetail")) && entry.MainAssetType == typeof(Texture2D)))
                     {
                         strip = true;
                     }
