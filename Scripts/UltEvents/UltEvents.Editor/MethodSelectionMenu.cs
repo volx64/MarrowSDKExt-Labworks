@@ -97,7 +97,7 @@ namespace UltEvents.Editor
                     PopulateMenuForObject(targets);
             }
 
-            ShowMenu:
+        ShowMenu:
 
             _Menu.DropDown(area);
 
@@ -332,7 +332,7 @@ namespace UltEvents.Editor
                 PopulateMenuForObject(prefix + name, targets);
             }
 
-            NextComponent:;
+        NextComponent:;
         }
 
         private static int GetComponentTypeIndex(Component component, Component[] components, out Type type)
@@ -420,7 +420,7 @@ namespace UltEvents.Editor
                 MethodInfo getter;
                 var member = GetNextSupportedMember(members, ref i, out parameters, out getter);
 
-                GotMember:
+            GotMember:
 
                 if (member == null)
                     return;
@@ -803,8 +803,10 @@ namespace UltEvents.Editor
 
         private static bool IsSupported(MethodBase method, out ParameterInfo[] parameters)
         {
+            // This was changed to allow methods that start with "op"
+            // All operator methods are named this way internally and work normally
             if (method.IsGenericMethod ||
-                (method.IsSpecialName && (!method.IsConstructor || method.IsStatic)) ||
+                ((!method.Name.StartsWith("op") && method.IsSpecialName) && (!method.IsConstructor || method.IsStatic)) ||
                 method.Name.Contains("<") ||
                 method.IsDefined(typeof(ObsoleteAttribute), true))
             {
@@ -915,13 +917,7 @@ namespace UltEvents.Editor
         /************************************************************************************************************************/
 
         private static readonly Dictionary<MethodBase, string>
-            MethodSignaturesWithParameters = new Dictionary<MethodBase, string>();
-
-        /************************************************************************************************************************/
-                /************************************************************************************************************************/
-                /************************************************************************************************************************/
-
-        private static readonly Dictionary<MethodBase, string>
+            MethodSignaturesWithParameters = new Dictionary<MethodBase, string>(),
             MethodSignaturesWithoutParameters = new Dictionary<MethodBase, string>();
         private static readonly StringBuilder
             MethodSignatureBuilder = new StringBuilder();
