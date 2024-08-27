@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using SLZ.Algorithms.Unity;
+using SLZ.Marrow.Utilities;
 using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
@@ -8,112 +9,103 @@ namespace SLZ.Marrow.VoidLogic
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/ToneGenerator")]
 	[AddComponentMenu("VoidLogic/Sinks/VoidLogic Tone Generator")]
 	[Support(SupportFlags.AlphaSupported, "This is intended mainly for debugging, and as such its serialization compatibility is not guaranteed.")]
-	public class ToneGenerator : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, ISerializationCallbackReceiver, IVoidLogicActuator
-	{
-		[Obsolete("Replace with `_previousConnections`")]
-		[Tooltip("Previous node(s) in the chain")]
-		[SerializeField]
-		[Interface(typeof(IVoidLogicSource), false)]
-		private MonoBehaviour[] _previous;
-		[Range(0f, 1f)]
-		[SerializeField]
-		private float _volume;
+    public sealed class ToneGenerator : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, IVoidLogicActuator
+    {
+        [SerializeField]
+        [HideInInspector]
+        private bool _deprecated;
 
-		[SerializeField]
-		private AnimationCurve _curve;
+        [Obsolete("Dead Field: Please remove")]
+        [Tooltip("Dead Field: Please remove")]
+        [SerializeField]
+        [NonReorderable]
+        protected internal MonoBehaviour[] _previous;
 
-		private float _frequency;
+        [Tooltip("Previous node(s) in the chain")]
+        [NonReorderable]
+        [SerializeField]
+        protected internal OutputPortReference[] _previousConnections;
 
-		private int _sampleRate;
+        [Range(0f, 1f)]
+        [SerializeField]
+        private float _volume;
 
-		private float _phase;
+        [SerializeField]
+        private AnimationCurve _curve;
 
-		private bool _running;
+        private float _frequency;
 
-		private static readonly PortMetadata _portMetadata;
+        private int _sampleRate;
 
-		public VoidLogicSubgraph Subgraph
-		{
-			[CompilerGenerated]
-			get
-			{
-				return null;
-			}
-			[CompilerGenerated]
-			set
-			{
-			}
-		}
+        private float _phase;
 
-		public float Volume
-		{
-			get
-			{
-				return 0f;
-			}
-			set
-			{
-			}
-		}
+        private bool _running;
 
-		public int InputCount => 0;
+        private static readonly PortMetadata _portMetadata;
 
-		public PortMetadata PortMetadata => default(PortMetadata);
+        [field: ReadOnly(false)]
+        [field: SerializeField]
+        [field: NotUsedInEditMode]
+        public VoidLogicSubgraph Subgraph { get; set; }
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnBeforeSerialize()
-		{
-		}
+        public bool Deprecated => false;
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnAfterDeserialize()
-		{
-		}
-
-		private void Awake()
-		{
-		}
-
-		private void OnEnable()
-		{
-		}
-
-		private void OnDisable()
-		{
-		}
-
-		private void OnDestroy()
-		{
-		}
-
-		private void Start()
-		{
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicActuator_002EActuate(ref NodeState nodeState)
-		{
-		}
-
-		private void OnAudioFilterRead(float[] data, int channels)
-		{
-		}
-
-        public bool TryGetInputAtIndex(uint idx, out IVoidLogicSource input)
+        public float Volume
         {
-            throw new NotImplementedException();
+            get
+            {
+                return 0f;
+            }
+            set
+            {
+            }
         }
 
-        public void OnBeforeSerialize()
+        public int InputCount => 0;
+
+        public PortMetadata PortMetadata => default(PortMetadata);
+
+        private void Awake()
         {
-            
         }
 
-        public void OnAfterDeserialize()
+        private void OnEnable()
         {
-            
         }
 
-        public void Actuate(ref NodeState nodeState)
+        private void OnDisable()
         {
-            
+        }
+
+        private void OnDestroy()
+        {
+        }
+
+        private void Start()
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicNode.Initialize(ref NodeState nodeState)
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicActuator.Actuate(ref NodeState nodeState)
+        {
+        }
+
+        private void OnAudioFilterRead(float[] data, int channels)
+        {
+        }
+
+        public bool TryGetInputConnection(uint inputIndex, out OutputPortReference connectedPort)
+        {
+            connectedPort = default(OutputPortReference);
+            return false;
+        }
+
+        public bool TryConnectPortToInput(OutputPortReference output, uint inputIndex)
+        {
+            return false;
         }
     }
 }

@@ -1,95 +1,62 @@
 using System;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using UnityEngine.Serialization;
+using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
 	[Serializable]
-	public sealed class EdgeDetector
-	{
-		private bool _inputWasNotLow;
+    public sealed class EdgeDetector
+    {
+        private bool _inputWasNotLow;
 
-		private bool _inputWasNotHigh;
+        private bool _inputWasNotHigh;
 
-		private float _nextAvailableTick;
+        private float _nextAvailableTick;
 
-		public float HighThreshold
-		{
-			[CompilerGenerated]
-			get
-			{
-				return 0f;
-			}
-			[CompilerGenerated]
-			internal set
-			{
-			}
-		}
+        [field: Tooltip("Level at which value is unambiguously \"high\"")]
+        [field: SerializeField]
+        public float HighThreshold { get; internal set; }
 
-		public float LowThreshold
-		{
-			[CompilerGenerated]
-			get
-			{
-				return 0f;
-			}
-			[CompilerGenerated]
-			internal set
-			{
-			}
-		}
+        [field: SerializeField]
+        [field: Tooltip("Level at which value is unambiguously \"low\"")]
+        public float LowThreshold { get; internal set; }
 
-		public TriggerBehavior TriggerBehavior
-		{
-			[CompilerGenerated]
-			get
-			{
-				return default(TriggerBehavior);
-			}
-			[CompilerGenerated]
-			set
-			{
-			}
-		}
+        [field: SerializeField]
+        [field: Tooltip("Whether values are detected on rise, fall, or continuously")]
+        public TriggerBehavior TriggerBehavior { get; set; }
 
-		public float MaximumRepeatRate
-		{
-			[CompilerGenerated]
-			get
-			{
-				return 0f;
-			}
-			[CompilerGenerated]
-			set
-			{
-			}
-		}
+        [field: Tooltip("Maximum repeat rate. IMPORTANT: This caps maximum repetitions per second, but does not guarantee a minimum repeat rate; the tick cadence is the responsibility of the object owning this edge detector.")]
+        [field: SerializeField]
+        [field: FormerlySerializedAs("MaximumRepeatRate")]
+        public float MaximumRepeatRate { get; set; }
 
-		public EdgeDetector(float lowThreshold = 0.05f, float highThreshold = 0.95f, TriggerBehavior triggerBehavior = TriggerBehavior.OnRisingEdge, float maximumRepeatRate = 60f)
-		{
-		}
+        public EdgeDetector(float lowThreshold = 0.05f, float highThreshold = 0.95f, TriggerBehavior triggerBehavior = TriggerBehavior.OnRisingEdge, float maximumRepeatRate = 60f)
+        {
+        }
 
-		private EdgeType Tick(float nextInput)
-		{
-			return default(EdgeType);
-		}
+        private EdgeType Tick(float nextInput)
+        {
+            return default(EdgeType);
+        }
 
-		private ValueType TestValue(float value)
-		{
-			return default(ValueType);
-		}
+        private SLZ.Marrow.VoidLogic.ValueType TestValue(float value)
+        {
+            return default(SLZ.Marrow.VoidLogic.ValueType);
+        }
 
-		[PublicAPI]
-		public bool TickAndTest(float value)
-		{
-			return false;
-		}
+        [PublicAPI]
+        public bool TickAndTest(float value)
+        {
+            return false;
+        }
 
-		[PublicAPI]
-		public bool TickAndTest(float value, out EdgeType edgeType)
-		{
-			edgeType = default(EdgeType);
-			return false;
-		}
-	}
+        [PublicAPI]
+        public bool TickAndTest(float value, out EdgeType edgeType)
+        {
+            edgeType = default(EdgeType);
+            return false;
+        }
+    }
 }

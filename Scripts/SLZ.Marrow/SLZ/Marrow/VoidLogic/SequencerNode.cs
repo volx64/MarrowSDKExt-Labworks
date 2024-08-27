@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Sequencer")]
+    [AddComponentMenu("VoidLogic/Nodes/VoidLogic Sequencer")]
 	[Support(SupportFlags.AlphaSupported, "This needs to be updated to use sensors and actuators.")]
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/SequencerNode")]
 	public class SequencerNode : BaseNode
@@ -122,5 +122,9 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }

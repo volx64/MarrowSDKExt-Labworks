@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[Support(SupportFlags.Deprecated, "Use Button + Toggle instead")]
+    [Support(SupportFlags.Deprecated, "Use Button + Toggle instead")]
 	[Support(SupportFlags.Unsupported, null)]
 	[Obsolete("Use Button + Toggle instead", true)]
 	[AddComponentMenu(null)]

@@ -687,10 +687,10 @@ namespace SLZ.Marrow.Interaction
 			ConfigurableJoint[] joints = go.GetComponentsInChildren<ConfigurableJoint>();
 			foreach(ConfigurableJoint joint in joints)
 			{
-				MarrowJoint marrowJoint = joint.GetComponent<MarrowJoint>();
-				if( marrowJoint == null )
+				MarrowJoint[] marrowJoint = joint.GetComponents<MarrowJoint>();
+				for(int i = marrowJoint.Length; i < joint.GetComponents<ConfigurableJoint>().Length; i++) 
 				{
-					marrowJoint = joint.gameObject.AddComponent<MarrowJoint>();
+					joint.gameObject.AddComponent<MarrowJoint>();
 				}
 			}
 

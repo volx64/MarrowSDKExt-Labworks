@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using SLZ.Algorithms.Unity;
+using SLZ.Marrow.Utilities;
 using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
@@ -8,123 +9,107 @@ namespace SLZ.Marrow.VoidLogic
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/RotatingJoint")]
 	[AddComponentMenu("VoidLogic/Sinks/VoidLogic Rotating Joint")]
 	[Support(SupportFlags.BetaSupported, "This works, but uses ConfigurableJoint instead of Marrow primitives.")]
-	public sealed class RotatingJoint : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, ISerializationCallbackReceiver, IVoidLogicActuator
-	{
-		[Interface(typeof(IVoidLogicSource), false)]
-		[SerializeField]
-		[Tooltip("Previous node in the chain")]
-		[Obsolete("Replace with `_previousConnection`")]
-		private MonoBehaviour _previousNode;
+    public sealed class RotatingJoint : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, IVoidLogicActuator
+    {
+        [SerializeField]
+        [HideInInspector]
+        private bool _deprecated;
 
-		private float? _priorValue;
+        [SerializeField]
+        [NonReorderable]
+        [Obsolete("Dead Field: Please remove")]
+        [Tooltip("Dead Field: Please remove")]
+        protected internal MonoBehaviour _previousNode;
 
-		[SerializeField]
-		private ConfigurableJoint _configurableJoint;
+        [Tooltip("Previous node in the chain")]
+        [SerializeField]
+        private OutputPortReference _previousConnection;
 
-		private Rigidbody _rigidBody;
+        private float? _priorValue;
 
-		[Header("Joint Control")]
-		[SerializeField]
-		private bool _varyTargetRotation;
+        [SerializeField]
+        private ConfigurableJoint _configurableJoint;
 
-		[SerializeField]
-		private float _minDegreesX;
+        private Rigidbody _rigidBody;
 
-		[SerializeField]
-		private float _maxDegreesX;
+        [Header("Joint Control")]
+        [SerializeField]
+        private bool _varyTargetRotation;
 
-		[SerializeField]
-		private bool _varyTargetAngVelocity;
+        [SerializeField]
+        private float _minDegreesX;
 
-		[SerializeField]
-		private Vector3 _minAngVelocity;
+        [SerializeField]
+        private float _maxDegreesX;
 
-		[SerializeField]
-		private Vector3 _maxAngVelocity;
+        [SerializeField]
+        private bool _varyTargetAngVelocity;
 
-		[SerializeField]
-		private bool _varyAngularDrive;
+        [SerializeField]
+        private Vector3 _minAngVelocity;
 
-		[SerializeField]
-		private Vector3 _xAngMinSpringDamperForce;
+        [SerializeField]
+        private Vector3 _maxAngVelocity;
 
-		[SerializeField]
-		private Vector3 _xAngMaxSpringDamperForce;
+        [SerializeField]
+        private bool _varyAngularDrive;
 
-		private static readonly PortMetadata _portMetadata;
+        [SerializeField]
+        private Vector3 _xAngMinSpringDamperForce;
 
-		public VoidLogicSubgraph Subgraph
-		{
-			[CompilerGenerated]
-			get
-			{
-				return null;
-			}
-			[CompilerGenerated]
-			set
-			{
-			}
-		}
+        [SerializeField]
+        private Vector3 _xAngMaxSpringDamperForce;
 
-		public int InputCount => 0;
+        private static readonly PortMetadata _portMetadata;
 
-		public PortMetadata PortMetadata => default(PortMetadata);
+        [field: ReadOnly(false)]
+        [field: NotUsedInEditMode]
+        [field: SerializeField]
+        public VoidLogicSubgraph Subgraph { get; set; }
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnBeforeSerialize()
-		{
-		}
+        public bool Deprecated => false;
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnAfterDeserialize()
-		{
-		}
+        public int InputCount => 0;
 
-		private void Awake()
-		{
-		}
+        public PortMetadata PortMetadata => default(PortMetadata);
 
-		private void OnEnable()
-		{
-		}
-
-		private void OnDisable()
-		{
-		}
-
-		private void OnDestroy()
-		{
-		}
-
-		private void Start()
-		{
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicActuator_002EActuate(ref NodeState nodeState)
-		{
-		}
-
-		private void SETJOINT(float voltage = 1f)
-		{
-		}
-
-        public bool TryGetInputAtIndex(uint idx, out IVoidLogicSource input)
+        private void Awake()
         {
-            input = null;
-			return true;
         }
 
-        public void OnBeforeSerialize()
+        private void OnEnable()
         {
-            
         }
 
-        public void OnAfterDeserialize()
+        private void OnDisable()
         {
-            
         }
 
-        public void Actuate(ref NodeState nodeState)
+        private void OnDestroy()
         {
-            
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicNode.Initialize(ref NodeState nodeState)
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicActuator.Actuate(ref NodeState nodeState)
+        {
+        }
+
+        private void SETJOINT(float voltage = 1f)
+        {
+        }
+
+        public bool TryGetInputConnection(uint inputIndex, out OutputPortReference connectedPort)
+        {
+            connectedPort = default(OutputPortReference);
+            return false;
+        }
+
+        public bool TryConnectPortToInput(OutputPortReference output, uint inputIndex)
+        {
+            return false;
         }
     }
 }

@@ -20,5 +20,19 @@ namespace SLZ.Marrow.Zones
         public ZoneEventCallback onZoneEnterOneShot = new();
         [Space(10)]
         public ZoneEventCallback onZoneExit = new();
+
+
+#if UNITY_EDITOR
+
+        [SerializeField]
+        private MarrowEntity OnZoneEnterEntity;
+
+        [ContextMenu("Test")]
+        private void Test() 
+        {
+            onZoneEnter.Invoke(OnZoneEnterEntity);
+        }
+
+#endif
     }
 }

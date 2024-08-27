@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[Support(SupportFlags.Supported, null)]
+    [Support(SupportFlags.Supported, null)]
 	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Toggle")]
 	public class ToggleNode : BaseNode
 	{
@@ -53,5 +53,9 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }

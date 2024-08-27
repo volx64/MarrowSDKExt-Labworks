@@ -1,98 +1,89 @@
 using System;
 using System.Runtime.CompilerServices;
 using SLZ.Algorithms.Unity;
+using SLZ.Marrow.Utilities;
 using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
 	[AddComponentMenu("VoidLogic/Sinks/VoidLogic Legacy Sound Player")]
 	[Support(SupportFlags.Deprecated, "It's unclear how exactly we want to properly support playing sound. This could break at any time.")]
-	public class LegacySoundPlayer : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, ISerializationCallbackReceiver, IVoidLogicActuator
-	{
-		[Tooltip("Previous node in the chain")]
-		[Obsolete("Replace with `_previousConnection`")]
-		[SerializeField]
-		[Interface(typeof(IVoidLogicSource), false)]
-		private MonoBehaviour _previousNode;
-		[SerializeField]
-		private AnimationCurve _curve;
+    public sealed class LegacySoundPlayer : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, IVoidLogicActuator
+    {
+        [SerializeField]
+        [HideInInspector]
+        private bool _deprecated;
 
-		private float _priorValue;
+        [NonReorderable]
+        [SerializeField]
+        [Obsolete("Dead Field: Please remove")]
+        [Tooltip("Dead Field: Please remove")]
+        protected internal MonoBehaviour _previousNode;
 
-		protected bool _wasOn;
+        [Tooltip("Previous node in the chain")]
+        [SerializeField]
+        private OutputPortReference _previousConnection;
 
-		[SerializeField]
-		[Header("Audio")]
-		private AudioClip _onSound;
+        [SerializeField]
+        private AnimationCurve _curve;
 
-		[SerializeField]
-		private AudioClip _offSound;
+        private float _priorValue;
 
-		private static readonly PortMetadata _portMetadata;
+        protected bool _wasOn;
 
-		public VoidLogicSubgraph Subgraph
-		{
-			[CompilerGenerated]
-			get
-			{
-				return null;
-			}
-			[CompilerGenerated]
-			set
-			{
-			}
-		}
+        [Header("Audio")]
+        [SerializeField]
+        private AudioClip _onSound;
 
-		public int InputCount => 0;
+        [SerializeField]
+        private AudioClip _offSound;
 
-		public PortMetadata PortMetadata => default(PortMetadata);
+        private static readonly PortMetadata _portMetadata;
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnBeforeSerialize()
-		{
-		}
+        [field: SerializeField]
+        [field: NotUsedInEditMode]
+        [field: ReadOnly(false)]
+        public VoidLogicSubgraph Subgraph { get; set; }
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnAfterDeserialize()
-		{
-		}
+        public bool Deprecated => false;
 
-		private void Awake()
-		{
-		}
+        public int InputCount => 0;
 
-		private void OnEnable()
-		{
-		}
+        public PortMetadata PortMetadata => default(PortMetadata);
 
-		private void OnDisable()
-		{
-		}
-
-		private void OnDestroy()
-		{
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicActuator_002EActuate(ref NodeState nodeState)
-		{
-		}
-
-        public bool TryGetInputAtIndex(uint idx, out IVoidLogicSource input)
+        private void Awake()
         {
-            throw new NotImplementedException();
         }
 
-        public void OnBeforeSerialize()
+        private void OnEnable()
         {
-            
         }
 
-        public void OnAfterDeserialize()
+        private void OnDisable()
         {
-            
         }
 
-        public void Actuate(ref NodeState nodeState)
+        private void OnDestroy()
         {
-            
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicNode.Initialize(ref NodeState nodeState)
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicActuator.Actuate(ref NodeState nodeState)
+        {
+        }
+
+        public bool TryGetInputConnection(uint inputIndex, out OutputPortReference connectedPort)
+        {
+            connectedPort = default(OutputPortReference);
+            return false;
+        }
+
+        public bool TryConnectPortToInput(OutputPortReference output, uint inputIndex)
+        {
+            return false;
         }
     }
 }

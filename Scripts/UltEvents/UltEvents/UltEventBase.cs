@@ -43,7 +43,7 @@ namespace UltEvents
         /************************************************************************************************************************/
 
         [SerializeField]
-        public List<PersistentCall> _PersistentCalls;
+        internal List<PersistentCall> _PersistentCalls;
 
         /// <summary>
         /// The serialized method and parameter details of this event.

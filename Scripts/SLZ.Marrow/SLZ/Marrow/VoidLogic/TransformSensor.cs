@@ -1,3 +1,4 @@
+using SLZ.Marrow.Utilities;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -5,74 +6,66 @@ namespace SLZ.Marrow.VoidLogic
 {
 	[Support(SupportFlags.BetaSupported, null)]
 	[AddComponentMenu("VoidLogic/Bonelab/VoidLogic Transform Sensor")]
-	public class TransformSensor : MonoBehaviour, IVoidLogicSource, IVoidLogicNode, IVoidLogicSensor
-	{
-		[SerializeField]
-		private Transform _anchor;
+    public sealed class TransformSensor : MonoBehaviour, IVoidLogicSource, IVoidLogicNode, IVoidLogicSensor
+    {
+        [HideInInspector]
+        [SerializeField]
+        private bool _deprecated;
 
-		[SerializeField]
-		private Transform _connectedTransform;
+        [SerializeField]
+        private Transform _anchor;
 
-		[SerializeField]
-		private bool _negate;
+        [SerializeField]
+        private Transform _connectedTransform;
 
-		private static readonly PortMetadata _portMetadata;
+        [SerializeField]
+        private bool _negate;
 
-		public VoidLogicSubgraph Subgraph
-		{
-			[CompilerGenerated]
-			get
-			{
-				return null;
-			}
-			[CompilerGenerated]
-			set
-			{
-			}
-		}
+        private static readonly PortMetadata _portMetadata;
 
-		public int OutputCount => 0;
+        [field: ReadOnly(false)]
+        [field: NotUsedInEditMode]
+        [field: SerializeField]
+        public VoidLogicSubgraph Subgraph { get; set; }
 
-		public PortMetadata PortMetadata => default(PortMetadata);
+        public bool Deprecated => false;
 
-		private void Awake()
-		{
-		}
+        public int OutputCount => 0;
 
-		private void OnEnable()
-		{
-		}
+        public PortMetadata PortMetadata => default(PortMetadata);
 
-		private void OnDisable()
-		{
-		}
-
-		private void OnDestroy()
-		{
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicSensor_002EReadSensors(ref NodeState nodeState)
-		{
-		}
-
-		[MethodImpl(256)]
-		private float _wrap(float angleDegrees)
-		{
-			return 0f;
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicSource_002ECalculate(ref NodeState nodeState)
-		{
-		}
-
-        public void Calculate(ref NodeState nodeState)
+        private void Awake()
         {
-            throw new System.NotImplementedException();
         }
 
-        public void ReadSensors(ref NodeState nodeState)
+        private void OnEnable()
         {
-            throw new System.NotImplementedException();
+        }
+
+        private void OnDisable()
+        {
+        }
+
+        private void OnDestroy()
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicNode.Initialize(ref NodeState nodeState)
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicSensor.ReadSensors(ref NodeState nodeState)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private float _wrap(float angleDegrees)
+        {
+            return 0f;
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicSource.Calculate(ref NodeState nodeState)
+        {
         }
     }
 }

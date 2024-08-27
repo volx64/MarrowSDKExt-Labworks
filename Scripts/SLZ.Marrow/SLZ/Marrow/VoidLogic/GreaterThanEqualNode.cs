@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Greater Than or Equal")]
+    [AddComponentMenu("VoidLogic/Nodes/VoidLogic Greater Than or Equal")]
 	[Support(SupportFlags.Supported, null)]
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/GreaterThanEqualNode")]
 	public class GreaterThanEqualNode : BaseNode
@@ -18,5 +18,9 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }

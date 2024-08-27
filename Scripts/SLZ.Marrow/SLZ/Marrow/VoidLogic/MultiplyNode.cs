@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Multiply")]
+    [AddComponentMenu("VoidLogic/Nodes/VoidLogic Multiply")]
 	[Support(SupportFlags.Supported, null)]
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/MultiplyNode")]
 	public class MultiplyNode : BaseNode
@@ -14,5 +14,9 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }

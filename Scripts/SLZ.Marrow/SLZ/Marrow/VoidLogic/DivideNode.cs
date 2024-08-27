@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Divide")]
+    [AddComponentMenu("VoidLogic/Nodes/VoidLogic Divide")]
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/DivideNode")]
 	[Support(SupportFlags.Supported, null)]
 	public class DivideNode : BaseNode
@@ -14,5 +14,10 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+            
+        }
+    }
 }

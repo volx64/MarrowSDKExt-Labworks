@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using SLZ.Algorithms.Unity;
+using SLZ.Marrow.Utilities;
 using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
@@ -8,147 +9,136 @@ namespace SLZ.Marrow.VoidLogic
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/LinearJoint")]
 	[AddComponentMenu("VoidLogic/Sinks/VoidLogic Linear Joint (Sliding)")]
 	[Support(SupportFlags.BetaSupported, "This works, but uses ConfigurableJoint instead of Marrow primitives.")]
-	public sealed class LinearJoint : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, ISerializationCallbackReceiver, IVoidLogicActuator
-	{
-		[SerializeField]
-		[Obsolete("Replace with `_previousConnection`")]
-		[Tooltip("Previous node in the chain")]
-		[Interface(typeof(IVoidLogicSource), false)]
-		private MonoBehaviour _previousNode;
+    public sealed class LinearJoint : MonoBehaviour, IVoidLogicSink, IVoidLogicNode, IVoidLogicActuator
+    {
+        [SerializeField]
+        [HideInInspector]
+        private bool _deprecated;
 
-		private float? _priorValue;
+        [SerializeField]
+        [Tooltip("Dead Field: Please remove")]
+        [Obsolete("Dead Field: Please remove")]
+        [NonReorderable]
+        protected internal MonoBehaviour _previousNode;
 
-		[SerializeField]
-		private bool _warpOnStart;
+        [SerializeField]
+        [Tooltip("Previous node in the chain")]
+        private OutputPortReference _previousConnection;
 
-		[SerializeField]
-		private ConfigurableJoint _configurableJoint;
+        private float? _priorValue;
 
-		private Rigidbody _rigidBody;
+        [SerializeField]
+        private bool _warpOnStart;
 
-		[SerializeField]
-		[Header("Joint Control")]
-		private bool _varyTargetPosition;
+        [SerializeField]
+        private ConfigurableJoint _configurableJoint;
 
-		[SerializeField]
-		private Vector3 _minPosition;
+        private Rigidbody _rigidBody;
 
-		[SerializeField]
-		private Vector3 _maxPosition;
+        [Header("Joint Control")]
+        [SerializeField]
+        private bool _varyTargetPosition;
 
-		[SerializeField]
-		private bool _varyTargetVelocity;
+        [SerializeField]
+        private Vector3 _minPosition;
 
-		[SerializeField]
-		private Vector3 _minVelocity;
+        [SerializeField]
+        private Vector3 _maxPosition;
 
-		[SerializeField]
-		private Vector3 _maxVelocity;
+        [SerializeField]
+        private bool _varyTargetVelocity;
 
-		[SerializeField]
-		private bool _varyPrismaticDrive;
+        [SerializeField]
+        private Vector3 _minVelocity;
 
-		[SerializeField]
-		private Vector3 _xMinSpringDamperForce;
+        [SerializeField]
+        private Vector3 _maxVelocity;
 
-		[SerializeField]
-		private Vector3 _xMaxSpringDamperForce;
+        [SerializeField]
+        private bool _varyPrismaticDrive;
 
-		[SerializeField]
-		private bool _varyPrismaticY;
+        [SerializeField]
+        private Vector3 _xMinSpringDamperForce;
 
-		[SerializeField]
-		private Vector3 _yMinSpringDamperForce;
+        [SerializeField]
+        private Vector3 _xMaxSpringDamperForce;
 
-		[SerializeField]
-		private Vector3 _yMaxSpringDamperForce;
+        [SerializeField]
+        private bool _varyPrismaticY;
 
-		[SerializeField]
-		private bool _varyPrismaticZ;
+        [SerializeField]
+        private Vector3 _yMinSpringDamperForce;
 
-		[SerializeField]
-		private Vector3 _zMinSpringDamperForce;
+        [SerializeField]
+        private Vector3 _yMaxSpringDamperForce;
 
-		[SerializeField]
-		private Vector3 _zMaxSpringDamperForce;
+        [SerializeField]
+        private bool _varyPrismaticZ;
 
-		private static readonly PortMetadata _portMetadata;
+        [SerializeField]
+        private Vector3 _zMinSpringDamperForce;
 
-		public VoidLogicSubgraph Subgraph
-		{
-			[CompilerGenerated]
-			get
-			{
-				return null;
-			}
-			[CompilerGenerated]
-			set
-			{
-			}
-		}
+        [SerializeField]
+        private Vector3 _zMaxSpringDamperForce;
 
-		public int InputCount => 0;
+        private static readonly PortMetadata _portMetadata;
 
-		public PortMetadata PortMetadata => default(PortMetadata);
+        [field: ReadOnly(false)]
+        [field: NotUsedInEditMode]
+        [field: SerializeField]
+        public VoidLogicSubgraph Subgraph { get; set; }
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnBeforeSerialize()
-		{
-		}
+        public bool Deprecated => false;
 
-		private void UnityEngine_002EISerializationCallbackReceiver_002EOnAfterDeserialize()
-		{
-		}
+        public int InputCount => 0;
 
-		private void Awake()
-		{
-		}
+        public PortMetadata PortMetadata => default(PortMetadata);
 
-		private void OnEnable()
-		{
-		}
-
-		private void OnDisable()
-		{
-		}
-
-		private void OnDestroy()
-		{
-		}
-
-		private void Start()
-		{
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicActuator_002EActuate(ref NodeState nodeState)
-		{
-		}
-
-		private void SETJOINT(float voltage = 1f)
-		{
-		}
-
-		private void WarpJoint()
-		{
-		}
-
-        public bool TryGetInputAtIndex(uint idx, out IVoidLogicSource input)
+        private void Awake()
         {
-            throw new NotImplementedException();
         }
 
-        public void OnBeforeSerialize()
+        private void OnEnable()
         {
-            
         }
 
-        public void OnAfterDeserialize()
+        private void OnDisable()
         {
-            
         }
 
-        public void Actuate(ref NodeState nodeState)
+        private void OnDestroy()
         {
-            
+        }
+
+        private void Start()
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicNode.Initialize(ref NodeState nodeState)
+        {
+        }
+
+        void SLZ.Marrow.VoidLogic.IVoidLogicActuator.Actuate(ref NodeState nodeState)
+        {
+        }
+
+        private void SETJOINT(float voltage = 1f)
+        {
+        }
+
+        private void WarpJoint()
+        {
+        }
+
+        public bool TryGetInputConnection(uint inputIndex, out OutputPortReference connectedPort)
+        {
+            connectedPort = default(OutputPortReference);
+            return false;
+        }
+
+        public bool TryConnectPortToInput(OutputPortReference output, uint inputIndex)
+        {
+            return false;
         }
     }
 }

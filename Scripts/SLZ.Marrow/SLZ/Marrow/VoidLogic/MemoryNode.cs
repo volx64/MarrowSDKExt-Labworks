@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[Support(SupportFlags.BetaSupported, "Should be stable, but needs more usage for full confidence")]
+    [Support(SupportFlags.BetaSupported, "Should be stable, but needs more usage for full confidence")]
 	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Memory")]
 	public sealed class MemoryNode : BaseNode
 	{
@@ -53,5 +53,9 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }

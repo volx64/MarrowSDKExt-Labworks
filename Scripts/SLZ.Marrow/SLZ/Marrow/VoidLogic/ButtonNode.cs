@@ -1,79 +1,77 @@
+// Warning: Some assembly references could not be resolved automatically. This might lead to incorrect decompilation of some parts,
+// for ex. property getter/setter access. To get optimal decompilation results, please manually add the missing references to the list of loaded assemblies.
+// SLZ.Marrow, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// SLZ.Marrow.VoidLogic.ButtonNode
 using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[Support(SupportFlags.Supported, null)]
-	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Button")]
-	public class ButtonNode : BaseNode, IVoidLogicSensor, IVoidLogicNode, IVoidLogicActuator
-	{
-		[SerializeField]
-		protected float _lowThreshold;
+    [AddComponentMenu("VoidLogic/VoidLogic Button")]
+    [Support(SupportFlags.Supported, null)]
+    public class ButtonNode : BaseNode, IVoidLogicSensor, IVoidLogicNode, IVoidLogicActuator
+    {
+        [SerializeField]
+        protected float _lowThreshold;
 
-		[SerializeField]
-		protected float _highThreshold;
+        [SerializeField]
+        protected float _highThreshold;
 
-		[SerializeField]
-		protected ConfigurableJoint _joint;
+        [SerializeField]
+        protected ConfigurableJoint _joint;
 
-		[SerializeField]
-		protected Transform _endTransform;
+        [SerializeField]
+        protected Transform _endTransform;
 
-		[Header("Audio")]
-		[SerializeField]
-		[Tooltip("Clip(s) to be played on button press")]
-		protected AudioClip[] _pressClips;
+        [Header("Audio")]
+        [SerializeField]
+        [Tooltip("Clip(s) to be played on button press")]
+        protected AudioClip[] _pressClips;
 
-		[SerializeField]
-		[Tooltip("Clip(s) to be played on button unpress")]
-		protected AudioClip[] _depressClips;
+        [SerializeField]
+        [Tooltip("Clip(s) to be played on button unpress")]
+        protected AudioClip[] _depressClips;
 
-		[SerializeField]
-		[Tooltip("Colliders that the button shaft collider will ignore")]
-		protected Collider[] _ignoreColliders;
+        [SerializeField]
+        [Tooltip("Colliders that the button shaft collider will ignore")]
+        protected Collider[] _ignoreColliders;
 
-		[SerializeField]
-		protected Collider _buttonShaftCollider;
+        [SerializeField]
+        protected Collider _buttonShaftCollider;
 
-		protected Rigidbody _rigidBody;
+        protected Rigidbody _rigidBody;
 
-		private Vector3 _initialDisplacement;
+        private Vector3 _initialDisplacement;
 
-		protected bool _isPressed;
+        protected bool _isPressed;
 
-		private bool _performedInitialRead;
+        private bool _performedInitialRead;
 
-		private static readonly PortMetadata _portMetadata;
+        private static readonly PortMetadata _portMetadata;
 
-		public override PortMetadata PortMetadata => default(PortMetadata);
+        public override PortMetadata PortMetadata => default(PortMetadata);
 
-		private new void Awake()
-		{
-		}
-
-		protected override void OnEnable()
-		{
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicSensor_002EReadSensors(ref NodeState nodeState)
-		{
-		}
-
-		public override void Calculate(ref NodeState nodeState)
-		{
-		}
-
-		private void SLZ_002EMarrow_002EVoidLogic_002EIVoidLogicActuator_002EActuate(ref NodeState nodeState)
-		{
-		}
-
-        public void ReadSensors(ref NodeState nodeState)
+        protected override void Awake()
         {
-            throw new System.NotImplementedException();
         }
 
-        public void Actuate(ref NodeState nodeState)
+        protected override void OnEnable()
         {
-            throw new System.NotImplementedException();
+        }
+
+        void IVoidLogicSensor.ReadSensors(ref NodeState nodeState)
+        {
+        }
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+
+        public override void Calculate(ref NodeState nodeState)
+        {
+        }
+
+        void IVoidLogicActuator.Actuate(ref NodeState nodeState)
+        {
         }
     }
 }

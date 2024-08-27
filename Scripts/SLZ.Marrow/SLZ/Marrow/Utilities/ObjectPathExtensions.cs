@@ -20,7 +20,14 @@ namespace SLZ.Marrow.Utilities
 		[PublicAPI]
 		public static string ObjectPath(this Component c)
 		{
-			return null;
+			GameObject obj = c.gameObject;
+			string path = "/" + obj.name;
+			while (obj.transform.parent != null)
+			{
+				obj = obj.transform.parent.gameObject;
+				path = "/" + obj.name + path;
+			}
+			return path;
 		}
 
 		[PublicAPI]

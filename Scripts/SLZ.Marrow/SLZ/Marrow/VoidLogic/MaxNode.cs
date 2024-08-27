@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/MaxNode")]
+    [HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/MaxNode")]
 	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Max")]
 	[Support(SupportFlags.Supported, null)]
 	public class MaxNode : BaseNode
@@ -14,5 +14,9 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }

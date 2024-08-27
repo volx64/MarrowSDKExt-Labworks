@@ -174,40 +174,8 @@ namespace SLZ.MarrowEditor
 
                     Debug.Log("Deduper: Stripped " + strippers.Count + " Assets: \n" + strippedAssets);
                     if (strippers.Count > 0)
-                        Debug.Log("Deduper: First Stripped Dedupe Group now has " + dedupeGroup.entries.Count + " assets");
+                        Debug.Log("Deduper: Stripped Dedupe Group now has " + dedupeGroup.entries.Count + " assets");
                 }
-
-                List<AddressableAssetEntry> strippers2 = new List<AddressableAssetEntry>();
-                foreach (var entry in dedupeGroup.entries)
-                {
-                    bool strip = false;
-                    if (entry.AssetPath.ToLower().Contains("litmas") || ((entry.AssetPath.ToLower().Contains("mas_m") || entry.AssetPath.ToLower().Contains("defaultdetail")) && entry.MainAssetType == typeof(Texture2D)))
-                    {
-                        strip = true;
-                    }
-
-                    if (strip)
-                    {
-                        strippers2.Add(entry);
-                    }
-                }
-
-                foreach (var entry in strippers2)
-                {
-                    dedupeGroup.RemoveAssetEntry(entry);
-                }
-
-                string strippedAssets2 = "";
-                foreach (var entry in strippers2)
-                {
-                    string extension = System.IO.Path.GetExtension(entry.AssetPath);
-                    strippedAssets2 += "[" + entry.MainAssetType.Name + (!string.IsNullOrEmpty(extension) ? "/" + extension.Replace(".", "") : "") + "] " + entry.MainAsset.name + " (" + entry.AssetPath + ") \n";
-                }
-
-                Debug.Log("Deduper: Stripped " + strippers2.Count + " Assets: \n" + strippedAssets2);
-                if (strippers2.Count > 0)
-                    Debug.Log("Deduper: Stripped Dedupe Group now has " + dedupeGroup.entries.Count + " assets");
-
             }
 
             AssetDatabase.SaveAssets();

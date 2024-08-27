@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/RemapNode")]
+    [HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/RemapNode")]
 	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Remap")]
 	[Support(SupportFlags.Supported, null)]
 	public class RemapNode : BaseNode
@@ -18,5 +18,9 @@ namespace SLZ.Marrow.VoidLogic
 		public override void Calculate(ref NodeState nodeState)
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }

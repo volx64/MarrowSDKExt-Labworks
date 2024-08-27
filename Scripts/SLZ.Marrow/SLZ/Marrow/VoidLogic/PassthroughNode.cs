@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SLZ.Marrow.VoidLogic
 {
-	[AddComponentMenu("VoidLogic/Nodes/VoidLogic Passthrough")]
+    [AddComponentMenu("VoidLogic/Nodes/VoidLogic Passthrough")]
 	[Support(SupportFlags.Supported, null)]
 	[HelpURL("https://github.com/StressLevelZero/MarrowSDK/wiki/VoidLogic/PassthroughNode")]
 	public class PassthroughNode : BaseNode
@@ -33,5 +33,9 @@ namespace SLZ.Marrow.VoidLogic
 		public void TurnOff()
 		{
 		}
-	}
+
+        public override void Initialize(ref NodeState nodeState)
+        {
+        }
+    }
 }
